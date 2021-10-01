@@ -1,6 +1,6 @@
 const http = require("http");
 var session = {
-    version:"0.1.0",
+    version:"0.2",
     limit:null,
     players:[
 
@@ -55,24 +55,26 @@ websocket.on("request", request => {
                     session.players[i].pd = parseBool(fdata[8]);
                     session.players[i].pspace = parseBool(fdata[9]);
                     session.players[i].piw = parseBool(fdata[10]);
-                    session.players[i].jmp = parseBool(fdata[11]);
-                    session.players[i].pxv = parseFloat(fdata[12]);
-                    session.players[i].pyv = parseFloat(fdata[13]);
+                    session.players[i].pil = parseBool(fdata[11]);
+                    session.players[i].jmp = parseBool(fdata[12]);
+                    session.players[i].pxv = parseFloat(fdata[13]);
+                    session.players[i].pyv = parseFloat(fdata[14]);
+                    session.players[i].health = parseInt(fdata[15]);
                 }
             }
         }
     });
     var sid = createCredential();
-    clients[sid] = {"connection": connection};
+    clients[sid] = {"connection": connection,"timeout":5};
     var sendData = {type:"connect",sid:sid};
-    session.players.push({id:sid,pr:466,pl:432,pt:934,pb:865,pxv:0,pyv:0,pw:false,ps:false,pa:false,pd:false,pspace:false,piw:false,jmp:false});
+    session.players.push({id:sid,pr:466,pl:432,pt:934,pb:865,pxv:0,pyv:0,pw:false,ps:false,pa:false,pd:false,pspace:false,piw:false,pil:false,jmp:false,health:50});
     connection.send(JSON.stringify(sendData));
 });
 function filter(id){
     var sendData = [];
     for(var i=0;i<session.players.length;i++){
         if(session.players[i].id != id){
-            sendData.push({pl:session.players[i].pl,pr:session.players[i].pr,pt:session.players[i].pt,pb:session.players[i].pb,pw:session.players[i].pw,ps:session.players[i].ps,pa:session.players[i].pa,pd:session.players[i].pd,pspace:session.players[i].pspace,pxv:session.players[i].pxv,pyv:session.players[i].pyv,piw:session.players[i].piw,jmp:session.players[i].jmp});
+            sendData.push({pl:session.players[i].pl,pr:session.players[i].pr,pt:session.players[i].pt,pb:session.players[i].pb,pw:session.players[i].pw,ps:session.players[i].ps,pa:session.players[i].pa,pd:session.players[i].pd,pspace:session.players[i].pspace,pxv:session.players[i].pxv,pyv:session.players[i].pyv,piw:session.players[i].piw,pil:session.players[i].pil,jmp:session.players[i].jmp,health:session.players[i].health});
         }
     }
     return sendData;
