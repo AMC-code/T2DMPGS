@@ -8,6 +8,7 @@ var session = {
 }
 const WebSocketServer = require("websocket").server;
 var clients = {};
+var sids = [];
 const httpServer = http.createServer()
 const websocket = new WebSocketServer({
     "httpServer":httpServer
@@ -20,7 +21,7 @@ function createCredential(){
         if(genNum > 9){
             credential += letters[genNum - 9];
         } else {
-            credential += `${genNum}`;
+            credential += genNum;
         }
     }
     if(session.players.length <= 0){
@@ -60,15 +61,16 @@ websocket.on("request", request => {
                     session.players[i].pxv = parseFloat(fdata[13]);
                     session.players[i].pyv = parseFloat(fdata[14]);
                     session.players[i].health = parseInt(fdata[15]);
+                    clients[session.players[i].id].sessiontimeout = 5;
                 }
             }
         }
     });
     var sid = createCredential();
-    clients[sid] = {"connection": connection,"timeout":5};
-    var sendData = {type:"connect",sid:sid};
+    clients[sid] = {"connection": connection,"sessiontimeout":5};
+    sids.push(sid);
     session.players.push({id:sid,pr:466,pl:432,pt:934,pb:865,pxv:0,pyv:0,pw:false,ps:false,pa:false,pd:false,pspace:false,piw:false,pil:false,jmp:false,health:50});
-    connection.send(JSON.stringify(sendData));
+    connection.send(JSON.stringify({type:"connect",sid:sid}));
 });
 function filter(id){
     var sendData = [];
@@ -79,13 +81,41 @@ function filter(id){
     }
     return sendData;
 }
+function sessiontimeout(){
+    var sids2 = [];
+    var players2 = [];
+    var clients2 = [];
+    if(sids.length > 0){
+        var push = false;
+        for(var i=0;i<sids.length;i++){
+            clients[sids[i]].sessiontimeout -= 1;
+            if(clients[sids[i]].sessiontimeout > 0){
+                clients2[sids[i]] = clients[sids[i]];
+                for(var l=0;l<session.players.length;l++){
+                    if(session.players[l].id == sids[i]){
+                        players2.push(session.players[l]);
+                    }
+                }
+                sids2.push(sids[i]);
+            } else {
+                push = true;
+            }
+        }
+        if(push){
+            sids = sids2;
+            session.players = players2;
+            clients = clients2;
+        }
+    }
+}
 function updateGame(){
-    if(session.players.length >= 2){
+    if(session.players.length > 0){
         for(var i=0;i<session.players.length;i++){
             clients[session.players[i].id].connection.send(JSON.stringify({type:"position",players:filter(session.players[i].id)}));
         }
     }
 }
-setInterval(updateGame,1000/12);
-const PORT = 303;
+setInterval(sessiontimeout, 1000);
+setInterval(updateGame, 1000/12);
+const PORT = 5000;
 httpServer.listen(PORT, () => console.log(`Server is on port : ${PORT}`));
