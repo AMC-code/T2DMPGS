@@ -503,5 +503,5 @@ function keepAlive(){
 setInterval(keepAlive, 2000);
 setInterval(sessiontimeout, 1000);
 setInterval(updateGame, 1000/12);
-const PORT = 5000;
-httpServer.listen(PORT, () => console.log(`Server is on port : ${PORT}`));
+const PORT = 5001;
+httpServer.listen(PORT, "127.0.0.1", () => console.log(`Server is on port : ${PORT}`));
