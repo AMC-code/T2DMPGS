@@ -6,6 +6,7 @@ var session = {
 
     ]
 }
+var worldSpawnPoint = {x:0,y:0}
 var map = [];
 function worldGeneration(){
     var wMap = [];
@@ -167,6 +168,20 @@ function worldGeneration(){
         }
     }
     // console.log(wMap)
+    var biomeLength = Math.floor((wMap[0].length-1)/biomes.length);
+    var biomeSpawn = Math.random() * (biomes.length - 1) + 1;
+    var xSpawnMax = biomeLength * biomeSpawn;
+    var xSpawnMin = biomeLength * (biomeSpawn-1);
+    var xSpawnPoint = Math.round(Math.random() * ((xSpawnMax-1) - xSpawnMin) + xSpawnMin);
+    var ySpawnPoint = 0;
+    for(var i=wMap.length-1;i>0;i--){
+        if(wMap[i][xSpawnPoint][0] != 0 && wMap[i-1][xSpawnPoint][0] == 0 && wMap[i-2][xSpawnPoint][0] == 0){
+            ySpawnPoint = wMap.length - i;
+            break;
+        }
+    }
+    worldSpawnPoint.x = (xSpawnPoint*36)+1;
+    worldSpawnPoint.y = (ySpawnPoint*36)+1;
     map = wMap;
 }
 // function worldGeneration(){
@@ -412,7 +427,8 @@ websocket.on("request", request => {
                 if(fdata[fdata.length-1] == sids[i]){
                     session.players.push({id:sid,pr:466,pl:432,pt:934,pb:865,pxv:0,pyv:0,pw:false,ps:false,pa:false,pd:false,pspace:false,piw:false,pil:false,jmp:false,swordS:0,blockS:0,clickA:0});
                     sendMap(sids[i]);
-                    sendThumb(sids[i]);
+                    sendWorldSpawn(sids[i]);
+                    // sendThumb(sids[i]);
                 }
             }
         }
@@ -468,6 +484,9 @@ function sessiontimeout(){
 }
 function sendThumb(sid){
     clients[sid].connection.send(JSON.stringify({type:"thumb",thumb:thumb}));
+}
+function sendWorldSpawn(sid){
+    clients[sid].connection.send(JSON.stringify({type:"worldSpawn",worldSpawnPoint:worldSpawnPoint}));
 }
 function sendMap(sid){
     clients[sid].connection.send(JSON.stringify({type:"map",map:map}));
