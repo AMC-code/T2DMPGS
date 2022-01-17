@@ -341,7 +341,6 @@ function worldGeneration(){
 worldGeneration();
 //
 //
-var thumb = 0;
 const WebSocketServer = require("websocket").server;
 var clients = {};
 var sids = [];
@@ -371,6 +370,10 @@ function createCredential(){
         }
     }
 }
+function block(y,x,num) {
+    var dBlocks = [[0,false],[1,3],[2,5],[3,8],[4,3],[5,8],[6,8],[7,3],[8,7],[9,5],[10,3],[11,8],[12,8],[13,false],[14,8],[15,4],[16,5],[17,false],[18,32],[19,false],[20,3],[21,12],[22,10],[23,10],[24,10],[25,10],[26,9],[27,9],[28,9],[29,2],[30,7],[31,7],[32,7,500],[33,7],[34,7,0],[35,7,0],[36,2],[37,12,{type:"storage",mouseX:0,mouseY:0,row:0,highlighted:0,inventory:[[0,0,0,0,0,0,0],[0,0,0,0,0,0,0],[0,0,0,0,0,0,0],[0,0,0,0,0,0,0]],}]];
+    map[y][x] = dBlocks[num];
+}
 function parseBool(b){
     return b == "true";
 }
@@ -382,28 +385,25 @@ websocket.on("request", request => {
         if(fdata[0] == "position"){
             for(var i=0;i<session.players.length;i++){
                 if(fdata[fdata.length-1] == session.players[i].id){
-                    // if(parseInt(fdata[fdata.length-2]) > session.players[i].latency || (parseInt(fdata[fdata.length-2]) <= 15 && session.players[i].latency >= 105)){
-                        // session.players[i].latency = parseInt(fdata[fdata.length-2]);
-                        session.players[i].pl = parseFloat(fdata[1]);
-                        session.players[i].pr = parseFloat(fdata[2]);
-                        session.players[i].pt = parseFloat(fdata[3]);
-                        session.players[i].pb = parseFloat(fdata[4]);
-                        session.players[i].pw = parseBool(fdata[5]);
-                        session.players[i].ps = parseBool(fdata[6]);
-                        session.players[i].pa = parseBool(fdata[7]);
-                        session.players[i].pd = parseBool(fdata[8]);
-                        session.players[i].pspace = parseBool(fdata[9]);
-                        session.players[i].piw = parseBool(fdata[10]);
-                        session.players[i].pil = parseBool(fdata[11]);
-                        session.players[i].jmp = parseBool(fdata[12]);
-                        session.players[i].pxv = parseFloat(fdata[13]);
-                        session.players[i].pyv = parseFloat(fdata[14]);
-                        session.players[i].swordS = parseFloat(fdata[15]);
-                        session.players[i].blockS = parseFloat(fdata[16]);
-                        session.players[i].clickS = parseFloat(fdata[17]);
-                        clients[session.players[i].id].sessiontimeout = 5;
-                    }
-                // }
+                    session.players[i].pl = parseFloat(fdata[1]);
+                    session.players[i].pr = parseFloat(fdata[2]);
+                    session.players[i].pt = parseFloat(fdata[3]);
+                    session.players[i].pb = parseFloat(fdata[4]);
+                    session.players[i].pw = parseBool(fdata[5]);
+                    session.players[i].ps = parseBool(fdata[6]);
+                    session.players[i].pa = parseBool(fdata[7]);
+                    session.players[i].pd = parseBool(fdata[8]);
+                    session.players[i].pspace = parseBool(fdata[9]);
+                    session.players[i].piw = parseBool(fdata[10]);
+                    session.players[i].pil = parseBool(fdata[11]);
+                    session.players[i].jmp = parseBool(fdata[12]);
+                    session.players[i].pxv = parseFloat(fdata[13]);
+                    session.players[i].pyv = parseFloat(fdata[14]);
+                    session.players[i].swordS = parseFloat(fdata[15]);
+                    session.players[i].blockS = parseFloat(fdata[16]);
+                    session.players[i].clickS = parseFloat(fdata[17]);
+                    clients[session.players[i].id].sessiontimeout = 5;
+                }
             }
         }
         if(fdata[0] == "attack"){
@@ -417,7 +417,7 @@ websocket.on("request", request => {
         if(fdata[0] == "build"){
             for(var i=0;i<session.players.length;i++){
                 if(fdata[fdata.length-1] == session.players[i].id){
-                    map[fdata[1]][fdata[2]] = fdata[3];
+                    block(fdata[1],[fdata[2]],fdata[3]);
                     updateBlock(session.players[i].id,fdata[1],fdata[2],fdata[3]);
                 }
             }
@@ -425,10 +425,9 @@ websocket.on("request", request => {
         if(fdata[0] == "joinsession"){
             for(var i=0;i<sids.length;i++){
                 if(fdata[fdata.length-1] == sids[i]){
-                    session.players.push({id:sid,pr:466,pl:432,pt:934,pb:865,pxv:0,pyv:0,pw:false,ps:false,pa:false,pd:false,pspace:false,piw:false,pil:false,jmp:false,swordS:0,blockS:0,clickA:0});
+                    session.players.push({id:sid,pr:0,pl:0,pt:0,pb:0,pxv:0,pyv:0,pw:false,ps:false,pa:false,pd:false,pspace:false,piw:false,pil:false,jmp:false,swordS:0,blockS:0,clickA:0});
                     sendMap(sids[i]);
                     sendWorldSpawn(sids[i]);
-                    // sendThumb(sids[i]);
                 }
             }
         }
@@ -482,9 +481,6 @@ function sessionTimeout(){
         }
     }
 }
-function sendThumb(sid){
-    clients[sid].connection.send(JSON.stringify({type:"thumb",thumb:thumb}));
-}
 function sendWorldSpawn(sid){
     clients[sid].connection.send(JSON.stringify({type:"worldSpawn",worldSpawnPoint:worldSpawnPoint}));
 }
@@ -501,14 +497,9 @@ function updateBlock(senderId,y,x,bId){
     }
 }
 function updateGame(){
-    // if(thumb >= 120){
-    //     thumb = 1;
-    // } else {
-    //     thumb++;
-    // }
     if(session.players.length > 0){
         for(var i=0;i<session.players.length;i++){
-            clients[session.players[i].id].connection.send(JSON.stringify({type:"position",thumb:thumb,players:filter(session.players[i].id)}));
+            clients[session.players[i].id].connection.send(JSON.stringify({type:"position",players:filter(session.players[i].id)}));
         }
     }
 }
