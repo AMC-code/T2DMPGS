@@ -454,7 +454,7 @@ function filter(id){
     }
     return sendData;
 }
-function sessiontimeout(){
+function sessionTimeout(){
     var sids2 = [];
     var players2 = [];
     var clients2 = [];
@@ -520,7 +520,7 @@ function keepAlive(){
     }
 }
 setInterval(keepAlive, 2000);
-setInterval(sessiontimeout, 1000);
-setInterval(updateGame, 1000/30);
+setInterval(sessionTimeout, 1000);
+setInterval(updateGame, 1000/12);
 const PORT = 5001;
 httpServer.listen(PORT, "127.0.0.1", () => console.log(`Server is on port : ${PORT}`));
