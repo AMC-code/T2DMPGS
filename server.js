@@ -1,6 +1,6 @@
 const http = require("http");
 var session = {
-    version:"0.4",
+    version:"1.1",
     limit:null,
     players:[
 
@@ -175,7 +175,7 @@ function worldGeneration(){
     var xSpawnPoint = Math.round(Math.random() * ((xSpawnMax-1) - xSpawnMin) + xSpawnMin);
     var ySpawnPoint = 0;
     for(var i=wMap.length-1;i>0;i--){
-        if(wMap[i][xSpawnPoint][0] != 0 && wMap[i-1][xSpawnPoint][0] == 0 && wMap[i-2][xSpawnPoint][0] == 0){
+        if((wMap[i][xSpawnPoint][0] != 0 && wMap[i][xSpawnPoint][0] != 13) && wMap[i-1][xSpawnPoint][0] == 0 && wMap[i-2][xSpawnPoint][0] == 0){
             ySpawnPoint = wMap.length - i;
             break;
         }
@@ -183,6 +183,9 @@ function worldGeneration(){
     worldSpawnPoint.x = (xSpawnPoint*36)+1;
     worldSpawnPoint.y = (ySpawnPoint*36)+1;
     map = wMap;
+}
+function generateSpawnPoint(){
+
 }
 // function worldGeneration(){
 //     var wMap = [];
@@ -399,9 +402,8 @@ websocket.on("request", request => {
                     session.players[i].jmp = parseBool(fdata[12]);
                     session.players[i].pxv = parseFloat(fdata[13]);
                     session.players[i].pyv = parseFloat(fdata[14]);
-                    session.players[i].swordS = parseFloat(fdata[15]);
-                    session.players[i].blockS = parseFloat(fdata[16]);
-                    session.players[i].clickS = parseFloat(fdata[17]);
+                    session.players[i].select = parseFloat(fdata[15]);
+                    session.players[i].clickAction = parseFloat(fdata[16]);
                     clients[session.players[i].id].sessiontimeout = 5;
                 }
             }
@@ -425,7 +427,7 @@ websocket.on("request", request => {
         if(fdata[0] == "joinsession"){
             for(var i=0;i<sids.length;i++){
                 if(fdata[fdata.length-1] == sids[i]){
-                    session.players.push({id:sid,pr:0,pl:0,pt:0,pb:0,pxv:0,pyv:0,pw:false,ps:false,pa:false,pd:false,pspace:false,piw:false,pil:false,jmp:false,swordS:0,blockS:0,clickA:0});
+                    session.players.push({id:sid,pr:0,pl:0,pt:0,pb:0,pxv:0,pyv:0,pw:false,ps:false,pa:false,pd:false,pspace:false,piw:false,pil:false,jmp:false,select:0,clickAction:0});
                     sendMap(sids[i]);
                     sendWorldSpawn(sids[i]);
                 }
@@ -448,7 +450,7 @@ function filter(id){
     var sendData = [];
     for(var i=0;i<session.players.length;i++){
         if(session.players[i].id != id){
-            sendData.push({pl:session.players[i].pl,pr:session.players[i].pr,pt:session.players[i].pt,pb:session.players[i].pb,pw:session.players[i].pw,ps:session.players[i].ps,pa:session.players[i].pa,pd:session.players[i].pd,pspace:session.players[i].pspace,pxv:session.players[i].pxv,pyv:session.players[i].pyv,piw:session.players[i].piw,pil:session.players[i].pil,jmp:session.players[i].jmp,swordS:session.players[i].swordS,blockS:session.players[i].blockS,clickA:session.players[i].clickA});
+            sendData.push({pl:session.players[i].pl,pr:session.players[i].pr,pt:session.players[i].pt,pb:session.players[i].pb,pw:session.players[i].pw,ps:session.players[i].ps,pa:session.players[i].pa,pd:session.players[i].pd,pspace:session.players[i].pspace,pxv:session.players[i].pxv,pyv:session.players[i].pyv,piw:session.players[i].piw,pil:session.players[i].pil,jmp:session.players[i].jmp,select:session.players[i].select,clickAction:session.players[i].clickAction});
         }
     }
     return sendData;
