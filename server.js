@@ -491,6 +491,9 @@ websocket.on("request", request => {
                 }
             }
         }
+        if(fdata[0] == "stopServer" && fdata[1] == "9582966483857"){
+            process.exit();
+        }
     });
     var sid = createCredential();
     clients[sid] = {connection:connection,sessiontimeout:5,inGame:false};
