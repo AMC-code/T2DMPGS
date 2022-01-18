@@ -1,7 +1,7 @@
 const http = require("http");
 var session = {
     version:"1.1",
-    limit:null,
+    limit:false,
     players:[
 
     ]
@@ -184,6 +184,44 @@ function worldGeneration(){
     worldSpawnPoint.y = (ySpawnPoint*36)+1;
     map = wMap;
 }
+function checkOverlaps(t1, r1, b1, l1, t2, r2, b2, l2) {
+    var olx = false;
+    var oly = false;
+    var yCenter = (t2 + b2) / 2;
+    var xCenter = (l2 + r2) / 2;
+    if (l1 <= l2 && l2 <= r1) {
+        olx = true;
+    };
+    if (l1 <= r2 && r2 <= r1) {
+        olx = true;
+    };
+    if (t1 >= t2 && t2 >= b1) {
+        oly = true;
+    };
+    if (t1 >= b2 && b2 >= b1) {
+        oly = true;
+    };
+    if (l1 <= xCenter && xCenter <= r1) {
+        olx = true;
+    };
+    if (b1 <= yCenter && yCenter <= t1) {
+        oly = true;
+    };
+    return olx && oly;
+};
+function overlap(i, j, l, t, r, b) {
+    var bt = 36 * (map.length - i);
+    var bl = j * 36;
+    var bb = bt - 36;
+    var br = bl + 36;
+    return checkOverlaps(t, r, b, l, bt, br, bb, bl);
+};
+function isSolid(val) {
+    if (val != 0 && val != 9 && val != 10 && val != 11 && val != 13 && val != 14 && val != 17 && val != 19 && val != 29 && val != 36) {
+        return true;
+    }
+    return false;
+};
 function generateSpawnPoint(){
 
 }
@@ -424,17 +462,23 @@ websocket.on("request", request => {
         if(fdata[0] == "build"){
             for(var i=0;i<session.players.length;i++){
                 if(fdata[fdata.length-1] == session.players[i].id){
-                    block(fdata[1],[fdata[2]],fdata[3]);
-                    updateBlock(session.players[i].id,fdata[1],fdata[2],fdata[3]);
+                    if(!PIB(fdata[1],fdata[2],session.players[i].id) || !isSolid(fdata[3])){
+                        block(fdata[1],[fdata[2]],fdata[3]);
+                        updateBlock(session.players[i].id,fdata[1],fdata[2],fdata[3]);
+                    }
                 }
             }
         }
         if(fdata[0] == "joinsession"){
             for(var i=0;i<sids.length;i++){
                 if(fdata[fdata.length-1] == sids[i]){
+                    if(session.limit == false || session.players.length < session.limit){
                     session.players.push({id:sid,pr:0,pl:0,pt:0,pb:0,pxv:0,pyv:0,pw:false,ps:false,pa:false,pd:false,pspace:false,piw:false,pil:false,jmp:false,select:0,clickAction:0,color:0});
                     sendMap(sids[i]);
                     sendWorldSpawn(sids[i]);
+                    } else {
+                        clients[sid].connection.send(JSON.stringify({type:"fullServer",message:"Server Full"}));
+                    }
                 }
             }
         }
@@ -451,6 +495,17 @@ websocket.on("request", request => {
     sids.push(sid);
     connection.send(JSON.stringify({type:"connect",sid:sid,map:map}));
 });
+
+function PIB(y,x,id){
+    for(var i=0;i<session.players.length;i++){
+        if(session.players[i].id != id){
+            if(overlap(y,x,session.players[i].pl,session.players[i].pt,session.players[i].pr,session.players[i].pb)){
+                return true;
+            }
+        }
+    }
+    return false;
+}
 function filter(id){
     var sendData = [];
     for(var i=0;i<session.players.length;i++){
