@@ -465,6 +465,8 @@ websocket.on("request", request => {
                     if(!PIB(fdata[1],fdata[2],session.players[i].id) || !isSolid(fdata[3])){
                         block(fdata[1],[fdata[2]],fdata[3]);
                         updateBlock(session.players[i].id,fdata[1],fdata[2],fdata[3]);
+                    } else {
+                        undoBlock(session.players[i].id,fdata[1],fdata[2]);
                     }
                 }
             }
@@ -495,7 +497,9 @@ websocket.on("request", request => {
     sids.push(sid);
     connection.send(JSON.stringify({type:"connect",sid:sid,map:map}));
 });
-
+function undoBlock(id,y,x){
+    clients[id].connection.send(JSON.stringify({type:"block",sBlock:{x:x,y:y,bId:map[y][x][0]}}));
+}
 function PIB(y,x,id){
     for(var i=0;i<session.players.length;i++){
         if(session.players[i].id != id){
