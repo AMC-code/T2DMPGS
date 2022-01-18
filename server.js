@@ -404,6 +404,7 @@ websocket.on("request", request => {
                     session.players[i].pyv = parseFloat(fdata[14]);
                     session.players[i].select = parseFloat(fdata[15]);
                     session.players[i].clickAction = parseFloat(fdata[16]);
+                    session.players[i].color = parseFloat(fdata[17]);
                     clients[session.players[i].id].sessiontimeout = 5;
                 }
             }
@@ -427,7 +428,7 @@ websocket.on("request", request => {
         if(fdata[0] == "joinsession"){
             for(var i=0;i<sids.length;i++){
                 if(fdata[fdata.length-1] == sids[i]){
-                    session.players.push({id:sid,pr:0,pl:0,pt:0,pb:0,pxv:0,pyv:0,pw:false,ps:false,pa:false,pd:false,pspace:false,piw:false,pil:false,jmp:false,select:0,clickAction:0});
+                    session.players.push({id:sid,pr:0,pl:0,pt:0,pb:0,pxv:0,pyv:0,pw:false,ps:false,pa:false,pd:false,pspace:false,piw:false,pil:false,jmp:false,select:0,clickAction:0,color:0});
                     sendMap(sids[i]);
                     sendWorldSpawn(sids[i]);
                 }
@@ -450,7 +451,7 @@ function filter(id){
     var sendData = [];
     for(var i=0;i<session.players.length;i++){
         if(session.players[i].id != id){
-            sendData.push({pl:session.players[i].pl,pr:session.players[i].pr,pt:session.players[i].pt,pb:session.players[i].pb,pw:session.players[i].pw,ps:session.players[i].ps,pa:session.players[i].pa,pd:session.players[i].pd,pspace:session.players[i].pspace,pxv:session.players[i].pxv,pyv:session.players[i].pyv,piw:session.players[i].piw,pil:session.players[i].pil,jmp:session.players[i].jmp,select:session.players[i].select,clickAction:session.players[i].clickAction});
+            sendData.push({pl:session.players[i].pl,pr:session.players[i].pr,pt:session.players[i].pt,pb:session.players[i].pb,pw:session.players[i].pw,ps:session.players[i].ps,pa:session.players[i].pa,pd:session.players[i].pd,pspace:session.players[i].pspace,pxv:session.players[i].pxv,pyv:session.players[i].pyv,piw:session.players[i].piw,pil:session.players[i].pil,jmp:session.players[i].jmp,select:session.players[i].select,clickAction:session.players[i].clickAction,color:session.players[i].color});
         }
     }
     return sendData;
