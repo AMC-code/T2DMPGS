@@ -374,6 +374,10 @@ function createCredential(){
     }
 }
 function block(y,x,num) {
+    if(y > map.length-1 || y < 0 || x > map[0].length-1 || x < 0 || num > dBlocks.length-1 || num < 0){
+        console.log("placing block at invalid position and/or placing invalid block type");
+        return;
+    }
     var dBlocks = [[0,false],[1,3],[2,5],[3,8],[4,3],[5,8],[6,8],[7,3],[8,7],[9,5],[10,3],[11,8],[12,8],[13,false],[14,8],[15,4],[16,5],[17,false],[18,32],[19,false],[20,3],[21,12],[22,10],[23,10],[24,10],[25,10],[26,9],[27,9],[28,9],[29,2],[30,7],[31,7],[32,7,500],[33,7],[34,7,0],[35,7,0],[36,2],[37,12,{type:"storage",mouseX:0,mouseY:0,row:0,highlighted:0,inventory:[[0,0,0,0,0,0,0],[0,0,0,0,0,0,0],[0,0,0,0,0,0,0],[0,0,0,0,0,0,0]],}]];
     map[y][x] = dBlocks[num];
 }
