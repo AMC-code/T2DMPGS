@@ -462,7 +462,7 @@ websocket.on("request", request => {
         if(fdata[0] == "build"){
             for(var i=0;i<session.players.length;i++){
                 if(fdata[fdata.length-1] == session.players[i].id){
-                    if(!PIB(fdata[1],fdata[2],session.players[i].id) || !isSolid(fdata[3])){
+                    if(!PIB(fdata[1],fdata[2]) || !isSolid(fdata[3])){
                         block(fdata[1],[fdata[2]],fdata[3]);
                         updateBlock(session.players[i].id,fdata[1],fdata[2],fdata[3]);
                     } else {
@@ -500,12 +500,10 @@ websocket.on("request", request => {
 function undoBlock(id,y,x){
     clients[id].connection.send(JSON.stringify({type:"block",sBlock:{x:x,y:y,bId:map[y][x][0]}}));
 }
-function PIB(y,x,id){
+function PIB(y,x){
     for(var i=0;i<session.players.length;i++){
-        if(session.players[i].id != id){
-            if(overlap(y,x,session.players[i].pl,session.players[i].pt,session.players[i].pr,session.players[i].pb)){
-                return true;
-            }
+        if(overlap(y,x,session.players[i].pl,session.players[i].pt,session.players[i].pr,session.players[i].pb)){
+            return true;
         }
     }
     return false;
