@@ -464,7 +464,7 @@ websocket.on("request", request => {
                 if(fdata[fdata.length-1] == session.players[i].id){
                     if(!PIB(fdata[1],fdata[2]) || !isSolid(fdata[3])){
                         block(fdata[1],[fdata[2]],fdata[3]);
-                        updateBlock(session.players[i].id,fdata[1],fdata[2],fdata[3]);
+                        updateBlock(fdata[1],fdata[2],fdata[3]);
                     } else {
                         undoBlock(session.players[i].id,fdata[1],fdata[2]);
                     }
@@ -554,12 +554,10 @@ function sendWorldSpawn(sid){
 function sendMap(sid){
     clients[sid].connection.send(JSON.stringify({type:"map",map:map}));
 }
-function updateBlock(senderId,y,x,bId){
+function updateBlock(y,x,bId){
     if(session.players.length > 0){
         for(var i=0;i<session.players.length;i++){
-            if(session.players[i].id != senderId){
-                clients[session.players[i].id].connection.send(JSON.stringify({type:"block",sBlock:{x:x,y:y,bId:bId}}));
-            }
+            clients[session.players[i].id].connection.send(JSON.stringify({type:"block",sBlock:{x:x,y:y,bId:bId}}));
         }
     }
 }
