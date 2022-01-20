@@ -447,7 +447,7 @@ websocket.on("request", request => {
                     session.players[i].select = parseFloat(fdata[15]);
                     session.players[i].clickAction = parseFloat(fdata[16]);
                     session.players[i].color = parseFloat(fdata[17]);
-                    clients[session.players[i].id].sessiontimeout = 5;
+                    clients[session.players[i].id].sessionTimeout = 5;
                 }
             }
         }
@@ -487,7 +487,7 @@ websocket.on("request", request => {
         if(fdata[0] == "->"){
             for(var i=0;i<sids.length;i++){
                 if(fdata[fdata.length-1] == sids[i]){
-                    clients[sids[i]].sessiontimeout = 5;
+                    clients[sids[i]].sessionTimeout = 5;
                 }
             }
         }
@@ -496,7 +496,7 @@ websocket.on("request", request => {
         }
     });
     var sid = createCredential();
-    clients[sid] = {connection:connection,sessiontimeout:5,inGame:false};
+    clients[sid] = {connection:connection,sessionTimeout:5,inGame:false};
     sids.push(sid);
     connection.send(JSON.stringify({type:"connect",sid:sid,map:map}));
 });
@@ -523,12 +523,15 @@ function filter(id){
 function sessionTimeout(){
     var sids2 = [];
     var players2 = [];
-    var clients2 = [];
+    var clients2 = {};
     if(sids.length > 0){
         var push = false;
         for(var i=0;i<sids.length;i++){
-            clients[sids[i]].sessiontimeout -= 1;
-            if(clients[sids[i]].sessiontimeout > 0){
+            clients[sids[i]].sessionTimeout -= 1;
+            if(clients[sids[i]].sessionTimeout <= 3){
+                clients[sids[i]].connection.send(JSON.stringify({type:"->"}));
+            }
+            if(clients[sids[i]].sessionTimeout > 0){
                 clients2[sids[i]] = clients[sids[i]];
                 for(var l=0;l<session.players.length;l++){
                     if(session.players[l].id == sids[i]){
