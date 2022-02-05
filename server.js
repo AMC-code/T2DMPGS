@@ -19,7 +19,7 @@ ws.on("request", req => {
     instance.on("message", (e) => {
 
     });
-    console.log(req.origin.remoteAddress);
+    console.log("New User Joined - Time : "+Date.now);
 });
 const PORT = 5001;
 httpServer.listen(PORT, "127.0.0.1", () => console.log(`Server is on port : ${PORT}`));
