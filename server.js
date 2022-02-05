@@ -14,14 +14,21 @@ var sids = [];
 var clients = [];
 const httpServer = http.createServer()
 const ws = new WebSocketServer({"httpServer":httpServer});
+function getTime(){
+    var time = new Date();
+    var precise = time.getHours()+":"+time.getMinutes();
+    // Date.
+    return Date().getHours();
+}
 ws.on("request", req => {
     var instance = req.accept(null, req.origin);
     instance.on("message", (e) => {
 
     });
     var time = new Date();
+    
     var precise = time.getHours()+":"+time.getMinutes();
-    console.log("New User Joined - Time : "+precise);
+    console.log("New User Joined - Time : "+getTime());
 });
-const PORT = 5001;
+const PORT = 5002;
 httpServer.listen(PORT, "127.0.0.1", () => console.log(`Server is on port : ${PORT}`));
