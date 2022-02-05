@@ -19,7 +19,9 @@ ws.on("request", req => {
     instance.on("message", (e) => {
 
     });
-    console.log("New User Joined - Time : "+Date.now);
+    var time = new Date();
+    var precise = time.getHours()+":"+time.getMinutes;
+    console.log("New User Joined - Time : "+precise);
 });
 const PORT = 5001;
 httpServer.listen(PORT, "127.0.0.1", () => console.log(`Server is on port : ${PORT}`));
