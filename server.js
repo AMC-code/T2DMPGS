@@ -20,7 +20,7 @@ ws.on("request", req => {
 
     });
     var time = new Date();
-    var precise = time.getHours()+":"+time.getMinutes;
+    var precise = time.getHours()+":"+time.getMinutes();
     console.log("New User Joined - Time : "+precise);
 });
 const PORT = 5001;
