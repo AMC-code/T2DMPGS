@@ -65,7 +65,7 @@ ws.on("request", req => {
             }
         }
     });
-    clients.push({prevSid:"",sid:genSid(),timeout:5});
+    clients[newSid] = {instance:instance,prevSid:"",sid:genSid(),timeout:5};
     console.log("User Connected - "+getTime());
 });
 function sessionTimeout(){
@@ -75,11 +75,11 @@ function sessionTimeout(){
         var push = false;
         for(var i=0;i<clients.length;i++){
             clients[i].timeout -= 1;
-            if(clients[sids[i]].sessionTimeout <= 3){
-                clients[sids[i]].connection.send(JSON.stringify({type:"->"}));
+            if(clients[i].timeout <= 3){
+                clients[i].instance.send(JSON.stringify({type:"->"}));
             }
-            if(clients[sids[i]].sessionTimeout > 0){
-                clients2[sids[i]] = clients[sids[i]];
+            if(clients[i].timeout > 0){
+                clients2[i] = clients[i];
                 // for(var l=0;l<session.players.length;l++){
                 //     if(session.players[l].id == sids[i]){
                 //         players2.push(session.players[l]);
@@ -92,12 +92,12 @@ function sessionTimeout(){
             }
         }
         if(push){
-            sids = sids2;
-            session.players = players2;
+            // session.players = players2;
             clients = clients2;
         }
     }
 }
+setInterval(sessionTimeout,1000);
 setInterval(reGenSid,10000);
 const PORT = 5002;
 httpServer.listen(PORT, "127.0.0.1", () => console.log(`Server is on port : ${PORT}`));
