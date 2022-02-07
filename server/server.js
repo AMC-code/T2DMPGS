@@ -1,4 +1,5 @@
 const http = require("http");
+const { CLOSE_REASON_NORMAL } = require("websocket/lib/WebSocketConnection");
 var session = {
     version:"1.7",
     limit:false,
@@ -19,7 +20,7 @@ function worldGeneration(){
     var curY = 80 - yWaterLevel - 2;
     var mainY = 35;
     for(var i=0;i<80;i++){
-        wMap.push([])
+        wMap.push([]);
     }
     for(var i=0;i<biomes.length;i++){
         var fallFor = 0;
@@ -219,7 +220,7 @@ function getTime(){
     if(date.getHours() > 12){
         return (date.getHours() - 12)+":"+min+":"+sec+" pm";
     }
-    return date.getHours()+":"+date.getMinutes()+" am";
+    return date.getHours()+":"+min+":"+sec+" am";
 }
 function genSid(){
     const letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -248,7 +249,6 @@ function reGenSid(){
         clients2[newSid] = clients[sids[i][0]];
         sids[i][1] = sids[i][0];
         sids[i][0] = newSid;
-        // console.log(sids[i][1]+" -> "+newSid)
     }
     clients = clients2;
     for(var i=0;i<sids.length;i++){
@@ -270,8 +270,8 @@ ws.on("request", req => {
     var instance = req.accept(null, req.origin);
     instance.on("message", (e) => {
         var data = e.utf8Data.split("|");
-        for(var i=0;i<sids.length;i++){
-            if(sids[i][0] == data[data.length-1] || sids[i][1] == data[data.length-1]){
+        for(var j=0;j<sids.length;j++){
+            if(sids[j][0] == data[data.length-1] || sids[j][1] == data[data.length-1]){
                 if(data[0] == "position"){
                     for(var i=0;i<session.players.length;i++){
                         if(data[data.length-1] == session.players[i].id[0] || data[data.length-1] == session.players[i].id[1]){
@@ -302,25 +302,42 @@ ws.on("request", req => {
                             if(!PIB(data[1],data[2]) || !isSolid(data[3])){
                                 block(data[1],[data[2]],data[3]);
                                 updateBlock(data[1],data[2],data[3]);
+                                console.log("Place Block - uid:"+clients[sids[j][0]].inSid+" - x:"+data[2]+" - y:"+data[1]+" - bId:"+data[3]+" - "+getTime());
                             } else {
                                 undoBlock(session.players[i].id[0],data[1],data[2]);
                             }
                         }
                     }
                 }
+                if(data[0] == "addProj"){
+                    for(var i=0;i<session.players.length;i++){
+                        if(data[data.length-1] == session.players[i].id[0] || data[data.length-1] == session.players[i].id[1]){
+                            addProj(data[1],data[2],data[3],data[4],data[5],data[6],data[7],data[8],session.players[i].id[0]);
+                            console.log("Drop Item - uid:"+clients[sids[j][0]].inSid+" - id:"+data[2]+" - clickAction:"+data[3]+" - bId:"+data[4]+" - "+getTime());
+                        }
+                    }
+                }
+                if(data[0] == "delProj"){
+                    for(var i=0;i<session.players.length;i++){
+                        if(data[data.length-1] == session.players[i].id[0] || data[data.length-1] == session.players[i].id[1]){
+                            delProj(data[1]);
+                            console.log("Collect Item - uid:"+clients[sids[j][0]].inSid+" - "+data[1]+" - "+getTime());
+                        }
+                    }
+                }
                 if(data[0] == "joinsession"){
                     if(session.players.length < session.limit || session.limit == false){
-                        clients[sids[i][0]].inGame = true;
-                        session.players.push({id:sids[i],pr:0,pl:0,pt:0,pb:0,pxv:0,pyv:0,pw:false,ps:false,pa:false,pd:false,pspace:false,piw:false,pil:false,jmp:false,select:0,clickAction:0,color:0});
-                        sendMap(sids[i][0]);
-                        sendWorldSpawn(sids[i][0]);
-                        console.log("User Join Game - "+clients[sids[i][0]].inSid+" - "+getTime());
+                        clients[sids[j][0]].inGame = true;
+                        session.players.push({id:sids[j],pr:0,pl:0,pt:0,pb:0,pxv:0,pyv:0,pw:false,ps:false,pa:false,pd:false,pspace:false,piw:false,pil:false,jmp:false,select:0,clickAction:0,color:0});
+                        sendMap(sids[j][0]);
+                        sendWorldSpawn(sids[j][0]);
+                        console.log("User Join Game - uid:"+clients[sids[j][0]].inSid+" - "+getTime());
                     } else {
                         clients[sids[i][0]].instance.send(JSON.stringify({type:"fullServer",message:"Server Full"}));
                     }
                 }
                 if(data[0] == "->"){
-                    clients[sids[i][0]].timeout = 5;
+                    clients[sids[j][0]].timeout = 5;
                 }
             }
         }
@@ -329,7 +346,7 @@ ws.on("request", req => {
     sids.push([newSid,""]);
     clients[newSid] = {instance:instance,inSid:newSid,prevSid:"",sid:newSid,inGame:false,timeout:5};
     sendSid(newSid);
-    console.log("User Connect - "+newSid+" - "+getTime());
+    console.log("User Connect - uid:"+newSid+" - "+getTime());
 });
 function sendSid(sid){
     clients[sid].instance.send(JSON.stringify({type:"sid",sid:sid}));
@@ -340,8 +357,11 @@ function sendWorldSpawn(sid){
 function sendMap(sid){
     clients[sid].instance.send(JSON.stringify({type:"map",map:map}));
 }
-function undoBlock(id,y,x){
-    clients[id].instance.send(JSON.stringify({type:"block",sBlock:{x:x,y:y,bId:map[y][x][0]}}));
+function undoBlock(sid,y,x){
+    clients[sid].instance.send(JSON.stringify({type:"block",sBlock:{x:x,y:y,bId:map[y][x][0]}}));
+}
+function undoItem(sid,pos,bId){
+    clients[sid].instance.send(JSON.stringify({type:"itemRemove",bId:bId,pos:pos}));
 }
 function PIB(y,x){
     for(var i=0;i<session.players.length;i++){
@@ -371,7 +391,7 @@ function sessionTimeout(){
                 }
                 sids2.push(sids[i]);
             } else {
-                console.log("User Disconnect - "+clients[sids[i][0]].inSid+" - "+getTime());
+                console.log("User Disconnect - uid:"+clients[sids[i][0]].inSid+" - "+getTime());
                 push = true;
             }
         }
@@ -391,6 +411,22 @@ function filter(id){
     }
     return sendData;
 }
+function delProj(id){
+    for(var i=0;i<session.players.length;i++){
+        clients[session.players[i].id[0]].instance.send(JSON.stringify({type:"delProjectile",projId:id}));
+    }
+}
+function addProj(type,id,clickAction,bId,velX,velY,x,y,sid){
+    for(var i=0;i<session.players.length;i++){
+        if(session.players[i].id[0] != sid && session.players[i].id[1] != sid){
+            if(clickAction == 0 || clickAction == 2){
+                clients[session.players[i].id[0]].instance.send(JSON.stringify({type:"addProjectile",projectile:{type:type,id:id,clickAction:parseFloat(clickAction),select:parseFloat(bId),velX:parseFloat(velX),velY:parseFloat(velY),pl:parseFloat(x),pr:parseFloat(x)+24,pb:parseFloat(y),pt:parseFloat(y)+24,stop:[false,false]}}));
+            } else if(clickAction == 1){
+                clients[session.players[i].id[0]].instance.send(JSON.stringify({type:"addProjectile",projectile:{type:type,id:id,clickAction:parseFloat(clickAction),select:parseFloat(bId),velX:parseFloat(velX),velY:parseFloat(velY),pl:parseFloat(x),pr:parseFloat(x)+18,pb:parseFloat(y),pt:parseFloat(y)+80,stop:[false,false]}}));
+            }
+        }
+    }
+}
 function updateBlock(y,x,bId){
     if(session.players.length > 0){
         for(var i=0;i<session.players.length;i++){
@@ -405,8 +441,8 @@ function updateGame(){
         }
     }
 }
-setInterval(updateGame, 1000/10);
+setInterval(updateGame, 1000/16);
 setInterval(sessionTimeout,1000);
-setInterval(reGenSid,6000);
+setInterval(reGenSid,15000);
 const PORT = 5001;
 httpServer.listen(PORT, "127.0.0.1", () => console.log(`Server is open on port : ${PORT}`));
