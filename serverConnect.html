@@ -6,6 +6,10 @@
             const ws = new WebSocket("ws://localhost:5002");
             ws.onmessage = function (e) {
                 var res = JSON.parse(e.data);
+                if(res.type == "sid"){
+                    sid = res.sid;
+                    console.log(res.sid);
+                }
                 if(res.type == "->") {
                     ws.send(`->|${sid}`);
                 }
