@@ -357,7 +357,7 @@ function sendMap(sid){
     clients[sid].instance.send(JSON.stringify({type:"map",map:map}));
 }
 function undoBlock(sid,y,x){
-    clients[sid].instance.send(JSON.stringify({type:"block",sBlock:{x:x,y:y,bId:map[y][x][0]}}));
+    clients[sid].instance.send(JSON.stringify({type:"block",sBlock:{x:parseFloat(x),y:parseFloat(y),bId:map[y][x][0]}}));
 }
 function undoItem(sid,pos,bId){
     clients[sid].instance.send(JSON.stringify({type:"itemRemove",bId:bId,pos:pos}));
@@ -429,7 +429,7 @@ function addProj(type,id,clickAction,bId,velX,velY,x,y,sid){
 function updateBlock(y,x,bId){
     if(session.players.length > 0){
         for(var i=0;i<session.players.length;i++){
-            clients[session.players[i].id[0]].instance.send(JSON.stringify({type:"block",sBlock:{x:x,y:y,bId:bId}}));
+            clients[session.players[i].id[0]].instance.send(JSON.stringify({type:"block",sBlock:{x:parseFloat(x),y:parseFloat(y),bId:parseFloat(bId)}}));
         }
     }
 }
@@ -440,8 +440,8 @@ function updateGame(){
         }
     }
 }
-setInterval(updateGame, 1000/16);
+setInterval(updateGame, 1000/14);
 setInterval(sessionTimeout,1000);
 setInterval(reGenSid,15000);
-const PORT = 5001;
+const PORT = 5002;
 httpServer.listen(PORT, "127.0.0.1", () => console.log(`Server is open on port : ${PORT}`));
