@@ -443,5 +443,5 @@ function updateGame(){
 setInterval(updateGame, 1000/14);
 setInterval(sessionTimeout,1000);
 setInterval(reGenSid,15000);
-const PORT = 5002;
+const PORT = 5001;
 httpServer.listen(PORT, "127.0.0.1", () => console.log(`Server is open on port : ${PORT}`));
