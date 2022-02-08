@@ -1,5 +1,4 @@
 const http = require("http");
-const { CLOSE_REASON_NORMAL } = require("websocket/lib/WebSocketConnection");
 var session = {
     version:"1.7",
     limit:false,
