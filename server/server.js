@@ -403,7 +403,7 @@ ws.on("request", req => {
             }
         }
     });
-    console.log(instance.remoteAddress);
+    console.log(instance.remoteAddresses);
     var newSid = genSid();
     sids.push([newSid,""]);
     clients[newSid] = {instance:instance,inSid:newSid,prevSid:"",sid:newSid,inGame:false,timeout:5};
