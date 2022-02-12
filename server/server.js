@@ -197,6 +197,67 @@ function isSolid(val) {
     }
     return false;
 };
+const eMap = [[0,1],[0,-1],[1,0],[-1,0]];
+function energyPlace(x,y,block){
+    if(block == 32 || block == 34){
+        energyTransfer(x,y);
+    } else if(block == 35){
+        placeFrame(x,y);
+    }
+}
+var specialEnergyBlocks = {
+
+};
+function energyRemoveT(x,y,block,energy){
+    if(block != 34 || block != 32){
+        removeEner(x,y,energy)
+    }
+}
+function placeFrame(x,y){
+    var largest = [0,0,0];
+    for(var i=0;i<4;i++){
+        if((map[y+eMap[i][0]][x+eMap[i][1]][0] == 32 || map[y+eMap[i][0]][x+eMap[i][1]][0] == 34) && map[y+eMap[i][0]][x+eMap[i][1]][2] > largest[2]){
+            largest[0] = y+eMap[i][0];
+            largest[1] = x+eMap[i][1];
+            largest[2] = map[y+eMap[i][0]][x+eMap[i][1]][2];
+        }
+    }
+    energyTransfer(largest[1],largest[0]);
+}
+function energyTransfer(x,y){
+    var energyLevel = map[y][x][2];
+    if(energyLevel-1 > 0){
+        for(var i=0;i<4;i++){
+            if((map[y+eMap[i][0]][x+eMap[i][1]][0] == 35 || map[y+eMap[i][0]][x+eMap[i][1]][0] == 34) && energyLevel > map[y+eMap[i][0]][x+eMap[i][1]][2]){
+                map[y+eMap[i][0]][x+eMap[i][1]][0] = 34;
+                map[y+eMap[i][0]][x+eMap[i][1]][2] = energyLevel-1;
+                energyTransfer(x+eMap[i][1],y+eMap[i][0]);
+            }
+        }
+    }
+}
+var energyArr = [];
+function removeEner(x,y,energyLevel){
+    energyArr = [];
+    killEnergy(x,y,energyLevel);
+    for(var i=0;i<energyArr.length;i++){
+        energyTransfer(energyArr[i][1],energyArr[i][0]);
+    }
+}
+function killEnergy(x,y,energyLevel){
+    for(var i=0;i<4;i++){
+        if(map[y+eMap[i][0]][x+eMap[i][1]][0] == 34 || map[y+eMap[i][0]][x+eMap[i][1]][0] == 32 || map[y+eMap[i][0]][x+eMap[i][1]][0] == 30){
+            if(map[y+eMap[i][0]][x+eMap[i][1]][2] < energyLevel){
+                map[y+eMap[i][0]][x+eMap[i][1]][0] = 35;
+                map[y+eMap[i][0]][x+eMap[i][1]][2] = 0;
+                killEnergy(x+eMap[i][1],y+eMap[i][0],energyLevel)
+            } else if(map[y+eMap[i][0]][x+eMap[i][1]][2] >= energyLevel){
+                energyArr.push([y+eMap[i][0],x+eMap[i][1]]);
+            }
+        }
+    }
+}
+
 //
 //
 //
@@ -299,6 +360,7 @@ ws.on("request", req => {
                     for(var i=0;i<session.players.length;i++){
                         if(data[data.length-1] == session.players[i].id[0] || data[data.length-1] == session.players[i].id[1]){
                             if(!PIB(data[1],data[2]) || !isSolid(data[3])){
+                                //make an energy system check in here the energy system has been added in this server code just add teh check
                                 block(data[1],[data[2]],data[3]);
                                 updateBlock(data[1],data[2],data[3]);
                                 console.log("Place Block - uid:"+clients[sids[j][0]].inSid+" - x:"+data[2]+" - y:"+data[1]+" - bId:"+data[3]+" - "+getTime());
@@ -341,6 +403,7 @@ ws.on("request", req => {
             }
         }
     });
+    console.log(instance.remoteAddress);
     var newSid = genSid();
     sids.push([newSid,""]);
     clients[newSid] = {instance:instance,inSid:newSid,prevSid:"",sid:newSid,inGame:false,timeout:5};
