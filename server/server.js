@@ -277,6 +277,9 @@ function getTime(){
     if(date.getSeconds() < 10){
         sec = "0"+sec;
     }
+    if(date.getHours() == 0){
+        return "12:"+min+":"+sec+" am";
+    }
     if(date.getHours() > 12){
         return (date.getHours() - 12)+":"+min+":"+sec+" pm";
     }
@@ -334,27 +337,37 @@ ws.on("request", req => {
             if(sids[j][0] == data[data.length-1] || sids[j][1] == data[data.length-1]){
                 if(data[0] == "position"){
                     for(var i=0;i<session.players.length;i++){
-                        if(data[data.length-1] == session.players[i].id[0] || data[data.length-1] == session.players[i].id[1]){
-                            session.players[i].pl = parseFloat(data[1]);
-                            session.players[i].pr = parseFloat(data[2]);
-                            session.players[i].pt = parseFloat(data[3]);
-                            session.players[i].pb = parseFloat(data[4]);
-                            session.players[i].pw = parseBool(data[5]);
-                            session.players[i].ps = parseBool(data[6]);
-                            session.players[i].pa = parseBool(data[7]);
-                            session.players[i].pd = parseBool(data[8]);
-                            session.players[i].pspace = parseBool(data[9]);
-                            session.players[i].piw = parseBool(data[10]);
-                            session.players[i].pil = parseBool(data[11]);
-                            session.players[i].jmp = parseBool(data[12]);
-                            session.players[i].pxv = parseFloat(data[13]);
-                            session.players[i].pyv = parseFloat(data[14]);
-                            session.players[i].select = parseFloat(data[15]);
-                            session.players[i].clickAction = parseFloat(data[16]);
-                            session.players[i].color = parseFloat(data[17]);
-                            clients[session.players[i].id[0]].timeout = 5;
-                        }
-                    }
+                        // if(validPosUpdate(sids[j][0],data[1],data[4])){
+                            if(data[data.length-1] == session.players[i].id[0] || data[data.length-1] == session.players[i].id[1]){
+                                session.players[i].pl = parseFloat(data[1]);
+                                session.players[i].pr = parseFloat(data[2]);
+                                session.players[i].pt = parseFloat(data[3]);
+                                session.players[i].pb = parseFloat(data[4]);
+                                session.players[i].pw = parseBool(data[5]);
+                                session.players[i].ps = parseBool(data[6]);
+                                session.players[i].pa = parseBool(data[7]);
+                                session.players[i].pd = parseBool(data[8]);
+                                session.players[i].pspace = parseBool(data[9]);
+                                session.players[i].piw = parseBool(data[10]);
+                                session.players[i].pil = parseBool(data[11]);
+                                session.players[i].jmp = parseBool(data[12]);
+                                session.players[i].pxv = parseFloat(data[13]);
+                                session.players[i].pyv = parseFloat(data[14]);
+                                session.players[i].select = parseFloat(data[15]);
+                                session.players[i].clickAction = parseFloat(data[16]);
+                                session.players[i].color = parseFloat(data[17]);
+                                clients[session.players[i].id[0]].timeout = 5;
+                            }
+                        } 
+                        // else {
+                        //     console.log("too fast")
+                        //     teleport(sids[i][0],session.players[i].pl,session.players[i].pb);
+                        // }
+                    // }
+                }
+                if(data[0] == "respawn"){
+                    console.log("respawn");
+                    teleport(sids[j][0],worldSpawnPoint.x,worldSpawnPoint.y)
                 }
                 if(data[0] == "build"){
                     for(var i=0;i<session.players.length;i++){
@@ -403,7 +416,6 @@ ws.on("request", req => {
             }
         }
     });
-    console.log(instance.remoteAddresses);
     var newSid = genSid();
     sids.push([newSid,""]);
     clients[newSid] = {instance:instance,inSid:newSid,prevSid:"",sid:newSid,inGame:false,timeout:5};
@@ -425,6 +437,9 @@ function undoBlock(sid,y,x){
 function undoItem(sid,pos,bId){
     clients[sid].instance.send(JSON.stringify({type:"itemRemove",bId:bId,pos:pos}));
 }
+function kickUser(sid){
+    //make this work
+}
 function PIB(y,x){
     for(var i=0;i<session.players.length;i++){
         if(overlap(y,x,session.players[i].pl,session.players[i].pt,session.players[i].pr,session.players[i].pb)){
@@ -432,6 +447,22 @@ function PIB(y,x){
         }
     }
     return false;
+}
+function validPosUpdate(sid,xPos,yPos){
+    //fix this moving left glitches out
+    var xRange = 36;
+    var yRange = 108;
+    for(var i=0;i<session.players.length;i++){
+        if(session.players[i].id[0] == sid || session.players[i].id[1] == sid){
+            // Math.abs(playersPos[i].pl - res.players[i].pl) > xRange || Math.abs(playersPos[i].pb - res.players[i].pb) > yRange
+            // ^ that should help but instead og minusing player left by player right use player left by xPos
+            if(session.players[i].pl+xRange < xPos || session.players[i].pb+yRange < yPos){
+                // console.log((session.players[i].pl+range)+" "+xPos)
+                return false;
+            }
+        }
+    }
+    return true;
 }
 function sessionTimeout(){
     var sids2 = [];
@@ -472,6 +503,18 @@ function filter(id){
         }
     }
     return sendData;
+}
+function teleport(sid,xPos,yPos){
+    console.log("tp")
+    for(var i=0;i<session.players.length;i++){
+        if(session.players[i].id[0] == sid || session.players[i].id[1] == sid){
+            session.players[i].pl = xPos;
+            session.players[i].pr = xPos+34;
+            session.players[i].pb = yPos;
+            session.players[i].pt = yPos+69;
+            clients[sid].instance.send(JSON.stringify({type:"teleport",pos:{pl:xPos,pr:xPos+34,pt:yPos+69,pb:yPos}}));
+        }
+    }
 }
 function delProj(id){
     for(var i=0;i<session.players.length;i++){
