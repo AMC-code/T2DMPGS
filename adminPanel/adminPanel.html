@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>tivect - Create Panel</title>
+        <link rel="stylesheet" href="main.css">
+        <script defer src="modMap.js"></script>
+        <script defer src="main.js"></script>
+        <script defer src="connection.js"></script>
+        <script defer src="blocks.js"></script>
+        <script defer src="selected.js"></script>
+
+    </head>
+    <body>
+        <div id="amc00" class="noScrollBar">
+            <div id="sideBar" class="noScrollBar">
+                <h1 id="sideTitle">tivect</h1>
+                <button class="sideButton" id="inspect" onclick=change(0)>Inspect</button>
+                <button class="sideButton" id="create" onclick=change(1)>Create</button>
+                <button class="sideButton" id="player">Player</button>
+                <button class="sideButton" id="projectile">Projectile</button>
+                <button class="sideButton" id="vehicle" onclick=change(4)>Vehicle</button>
+                <button class="sideButton" id="logs">Logs</button>
+                <button class="sideButton" onclick=getFile()>Upload Save File</button>
+                <input hidden="hidden" id="saveFile" type="file" onchange=readSave()>
+            </div>
+            <div id="amc01" class="noScrollBar">
+                <canvas id="map"></canvas>
+                <canvas id="blocks"></canvas>
+                <div id="dataOut" class="noScrollBar"></div>
+                <div id="general" class="noScrollBar">
+                    <canvas id="selected"></canvas>
+                    <div id="size" class="noScrollBar">
+                        <button id="sizeBtnP" onclick=changeSize(1)>+</button>
+                        <button id="sizeBtnM" onclick=changeSize(-1)>-</button>
+                        <h1 id="sizeVal">16</h1>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

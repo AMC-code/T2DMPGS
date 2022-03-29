@@ -8,12 +8,16 @@ var session = {
 }
 var worldSpawnPoint = {x:0,y:0}
 var map = [];
+var serverKey = genServerKey();
+console.log(serverKey)
+var logs = [];
 //
 //
 //
 function worldGeneration(){
     var wMap = [];
-    var biomes = [1,1,1,1,1,0,1,1,2,1,1];
+    // var biomes = [1,1,1,1,1,0,1,1,2,1,1];
+    var biomes = [1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0];
     var maxBiomes = 2;
     var yWaterLevel = 35;
     var curY = 80 - yWaterLevel - 2;
@@ -119,13 +123,13 @@ function worldGeneration(){
                 for(var ji=0;ji<distance;ji++){
                     for(var j=0;j<wMap.length;j++){
                         if(j<curY){
-                            wMap[j].push([0,false]);
+                            wMap[j].push([0,false,"air"]);
                         } else if (j == curY){
-                            wMap[j].push([1,3]);
+                            wMap[j].push([1,3,"grain"]);
                         } else if(j > curY && j < curY+5){
-                            wMap[j].push([4,3]);
+                            wMap[j].push([4,3,"grain"]);
                         } else if(j >= curY+5){
-                            wMap[j].push([5,8]);
+                            wMap[j].push([5,8,"stone"]);
                         }
                     }
                 }
@@ -134,11 +138,11 @@ function worldGeneration(){
     for(var i=(80 - yWaterLevel);i<wMap.length;i++){
         for(var l=0;l<wMap[i].length;l++){
             if(wMap[i][l][0] == 0){
-                wMap[i][l] = [13,false]
+                wMap[i][l] = [13,false,"liquid"]
             } else if(wMap[i][l][0] == 1){
-                wMap[i][l] = [20,3]
-                wMap[i+1][l] = [20,3]
-                wMap[i-1][l] = [20,3]
+                wMap[i][l] = [20,3,"grain"]
+                wMap[i+1][l] = [20,3,"grain"]
+                wMap[i-1][l] = [20,3,"grain"]
             }
         }
     }
@@ -197,26 +201,58 @@ function isSolid(val) {
     }
     return false;
 };
+//
+//
+//
 const eMap = [[0,1],[0,-1],[1,0],[-1,0]];
 function energyPlace(x,y,block){
-    if(block == 32 || block == 34){
+    if(activeEnBlock(block) == 1){
         energyTransfer(x,y);
-    } else if(block == 35){
+    } else if(activeEnBlock(block) == 0){
         placeFrame(x,y);
     }
 }
-var specialEnergyBlocks = {
-
-};
+var energyBlocks = [
+    [35,34],
+    // [38,30], //this is the switch block stuff
+    // [31,38], //this is the switch block stuff
+    [40,41],
+    [42,43],
+];
+function validCheck(y,x){
+    return !(x > map[0].length-1 || x < 0 || y > map.length-1 || y < 0);
+}
+function activeEnBlock(val){
+    for(var i=0;i<energyBlocks.length;i++){
+        if(energyBlocks[i][0] == val){
+            return 0;
+        }
+        if(energyBlocks[i][1] == val || val == 32){
+            return 1;
+        }
+    }
+    return -1;
+}
+function energyUseBlock(val){
+    if(val == 32){
+        return [32,32];
+    }
+    for(var i=0;i<energyBlocks.length;i++){
+        if(val == energyBlocks[i][0] || val == energyBlocks[i][1]){
+            return energyBlocks[i]
+        }
+    }
+    return -1;
+}
 function energyRemoveT(x,y,block,energy){
     if(block != 34 || block != 32){
-        removeEner(x,y,energy)
+        removeEner(x,y,energy);
     }
 }
 function placeFrame(x,y){
     var largest = [0,0,0];
     for(var i=0;i<4;i++){
-        if((map[y+eMap[i][0]][x+eMap[i][1]][0] == 32 || map[y+eMap[i][0]][x+eMap[i][1]][0] == 34) && map[y+eMap[i][0]][x+eMap[i][1]][2] > largest[2]){
+        if(validCheck(y+eMap[i][0],x+eMap[i][1]) && activeEnBlock(map[y+eMap[i][0]][x+eMap[i][1]][0]) != -1 && map[y+eMap[i][0]][x+eMap[i][1]][2] > largest[2]){
             largest[0] = y+eMap[i][0];
             largest[1] = x+eMap[i][1];
             largest[2] = map[y+eMap[i][0]][x+eMap[i][1]][2];
@@ -228,10 +264,13 @@ function energyTransfer(x,y){
     var energyLevel = map[y][x][2];
     if(energyLevel-1 > 0){
         for(var i=0;i<4;i++){
-            if((map[y+eMap[i][0]][x+eMap[i][1]][0] == 35 || map[y+eMap[i][0]][x+eMap[i][1]][0] == 34) && energyLevel > map[y+eMap[i][0]][x+eMap[i][1]][2]){
-                map[y+eMap[i][0]][x+eMap[i][1]][0] = 34;
-                map[y+eMap[i][0]][x+eMap[i][1]][2] = energyLevel-1;
-                energyTransfer(x+eMap[i][1],y+eMap[i][0]);
+            if(validCheck(y+eMap[i][0],x+eMap[i][1])){
+                var type = energyUseBlock(map[y+eMap[i][0]][x+eMap[i][1]][0]);
+                if(type != 1 && energyLevel > map[y+eMap[i][0]][x+eMap[i][1]][2]){
+                    map[y+eMap[i][0]][x+eMap[i][1]][0] = type[1];
+                    map[y+eMap[i][0]][x+eMap[i][1]][2] = energyLevel-1;
+                    energyTransfer(x+eMap[i][1],y+eMap[i][0]);
+                }
             }
         }
     }
@@ -246,13 +285,16 @@ function removeEner(x,y,energyLevel){
 }
 function killEnergy(x,y,energyLevel){
     for(var i=0;i<4;i++){
-        if(map[y+eMap[i][0]][x+eMap[i][1]][0] == 34 || map[y+eMap[i][0]][x+eMap[i][1]][0] == 32 || map[y+eMap[i][0]][x+eMap[i][1]][0] == 30){
-            if(map[y+eMap[i][0]][x+eMap[i][1]][2] < energyLevel){
-                map[y+eMap[i][0]][x+eMap[i][1]][0] = 35;
-                map[y+eMap[i][0]][x+eMap[i][1]][2] = 0;
-                killEnergy(x+eMap[i][1],y+eMap[i][0],energyLevel)
-            } else if(map[y+eMap[i][0]][x+eMap[i][1]][2] >= energyLevel){
-                energyArr.push([y+eMap[i][0],x+eMap[i][1]]);
+        if(validCheck(y+eMap[i][0],x+eMap[i][1])){
+            var type = energyUseBlock(map[y+eMap[i][0]][x+eMap[i][1]][0]);
+            if(type != -1 && activeEnBlock(map[y+eMap[i][0]][x+eMap[i][1]][0]) == 1){
+                if(map[y+eMap[i][0]][x+eMap[i][1]][2] < energyLevel){
+                    map[y+eMap[i][0]][x+eMap[i][1]][0] = type[0];
+                    map[y+eMap[i][0]][x+eMap[i][1]][2] = 0;
+                    killEnergy(x+eMap[i][1],y+eMap[i][0],energyLevel)
+                } else if(map[y+eMap[i][0]][x+eMap[i][1]][2] >= energyLevel){
+                    energyArr.push([y+eMap[i][0],x+eMap[i][1]]);
+                }
             }
         }
     }
@@ -284,6 +326,19 @@ function getTime(){
         return (date.getHours() - 12)+":"+min+":"+sec+" pm";
     }
     return date.getHours()+":"+min+":"+sec+" am";
+}
+function genServerKey(){
+    const letters = "abcdefghijklmnopqrstuvwxyz!)&*(^@%$#ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    var credential = "";
+    for(var i=0; i<32;i++){
+        genNum = Math.floor(Math.random() * ((9 + letters.length) - 0) + 0);
+        if(genNum > 9){
+            credential += letters[genNum - 9];
+        } else {
+            credential += genNum;
+        }
+    }
+    return credential;
 }
 function genSid(){
     const letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -319,44 +374,117 @@ function reGenSid(){
     }
 }
 function block(y,x,num) {
-    var dBlocks = [[0,false],[1,3],[2,5],[3,8],[4,3],[5,8],[6,8],[7,3],[8,7],[9,5],[10,3],[11,8],[12,8],[13,false],[14,8],[15,4],[16,5],[17,false],[18,32],[19,false],[20,3],[21,12],[22,10],[23,10],[24,10],[25,10],[26,9],[27,9],[28,9],[29,2],[30,7],[31,7],[32,7,500],[33,7],[34,7,0],[35,7,0],[36,2],[37,12,{type:"storage",mouseX:0,mouseY:0,row:0,highlighted:0,inventory:[[0,0,0,0,0,0,0],[0,0,0,0,0,0,0],[0,0,0,0,0,0,0],[0,0,0,0,0,0,0]],}]];
+    var dBlocks = [[0,false,"air"],[1,3,"grain"],[2,5,"wood"],[3,8,"stone"],[4,3,"grain"],[5,8,"stone"],[6,8,"stone"],[7,3,"brittle"],[8,7,"stone"],[9,5,"wood"],[10,3,"brittle"],[11,8,"stone"],[12,8,"stone"],[13,false,"liquid"],[14,8,"stone"],[15,4,"silk"],[16,5,"cookie"],[17,false,"unknown"],[18,32,"stone"],[19,6,"metal"],[20,3,"grain"],[21,12,"stone"],[22,10,"stone"],[23,10,"stone"],[24,10,"stone"],[25,10,"stone"],[26,9,"stone"],[27,9,"stone"],[28,9,"stone"],[29,2,"grain"],[30,7,0,false,"stone"],[31,7,0,false,"stone"],[32,7,1000,"stone"],[33,7,"stone"],[34,7,1,"stone"],[35,7,0,"stone"],[36,2,"silk"],[37,12,{type:"storage",mouseX:0,mouseY:0,row:0,highlighted:0,tabs:0,inventory:[[0,0,0,0,0,0,0],[0,0,0,0,0,0,0],[0,0,0,0,0,0,0],[0,0,0,0,0,0,0]]},"metal"],[38,7,0,false,"stone"],[39,5,"wood"],[40,6,0,{type:"interface",mouseX:0,mouseY:0,tabs:0,select:[0,0],rows:[[[0,"TYPE:"],[1,30,""]],[[0,"TYPE:"],[1,30,""]],[[0,"TYPE:"],[1,30,""]],[[0,"TYPE:"],[1,30,""]],[[0,"TYPE:"],[1,30,""]]]},"stone"],[41,6,1,{type:"interface",mouseX:0,mouseY:0,tabs:0,select:[0,0],rows:[[[0,"TYPE:"],[1,30,""]],[[0,"TYPE:"],[1,30,""]],[[0,"TYPE:"],[1,30,""]],[[0,"TYPE:"],[1,30,""]],[[0,"TYPE:"],[1,30,""]]]},"stone"],[42,6,0,[""],"stone"],[43,6,1,[""],"stone"]];
     if(y > map.length-1 || y < 0 || x > map[0].length-1 || x < 0 || num > dBlocks.length-1 || num < 0){
         console.log("Attempted block placement at invalid position and/or invalid block type");
         return;
     }
     map[y][x] = dBlocks[num];
 }
+function modifyBlock(y,x,val,data){
+    if (map[y][x][0] == val){
+        if(val == 42){
+            for(var i=0;i<data.length;i++){
+                map[y][x][3].rows[data[i][0]][data[i][1]][map[y][x][3].rows[data[i][0]][data[i][1]].length-1] = data[i][2];
+            }
+        }
+    }
+}
 function parseBool(b){
     return b == "true";
+}
+function inMap(x,y){
+    return !(x > map[0].length-1 || x < 0 || y < 0 || y > map.length-1);
+}
+var types = []
+function processData(data){
+    data = data.split("|")
+    var idx = 0;
+    var data1 = [];
+    var active = false;
+    for(var i=0;i<data.length;i++){
+        if(data[i][0] == "<" && data[i][data[i].length-1] == ">"){
+            if(active){
+                active = false;
+                idx++;
+            }
+            data1[idx] = [];
+            data1[idx].push(data[i].split("<")[1].split(">")[0])
+            idx++;
+        } else if(data[i][data[i].length-1] == ">"){
+            if(!active){
+                data1[idx] = data[i].split(">")[0]
+            } else {
+                data1[idx].push(data[i].split(">")[0])
+                active = false;
+            }
+            idx++;
+        } else if(data[i][0] == "<"){
+            if(active){
+                idx++;
+            }
+            data1[idx] = [];
+            data1[idx].push(data[i].split("<")[1])
+            active = true;
+        } else {
+            if(!active){
+                data1[idx] = data[i]
+                idx++;
+            } else {
+                data1[idx].push(data[i])
+            }
+        }
+    }
+    return data1;
+}
+//fix this it does not work it 
+//it causes the entire server to only send stuff when it detects a change for whatever reason
+function realNums(nums){
+    // const num = "1234567890.-";
+    // for(var i=0;i<nums.length;i++){
+    //     for(var j=0;j<nums[i].length;j++){
+    //         if(num.indexOf(nums[i][j]) == -1){
+    //             return false;
+    //         }
+    //     }
+    // }
+    // return true;
+    return true;
 }
 ws.on("request", req => {
     var instance = req.accept(null, req.origin);
     instance.on("message", (e) => {
-        var data = e.utf8Data.split("|");
+        var data = processData(e.utf8Data);
+        if(data == -1){
+            return;
+        }
         for(var j=0;j<sids.length;j++){
             if(sids[j][0] == data[data.length-1] || sids[j][1] == data[data.length-1]){
-                if(data[0] == "position"){
+                if(data[0] == "position" && data.length == 19){
                     for(var i=0;i<session.players.length;i++){
                         // if(validPosUpdate(sids[j][0],data[1],data[4])){
                             if(data[data.length-1] == session.players[i].id[0] || data[data.length-1] == session.players[i].id[1]){
-                                session.players[i].pl = parseFloat(data[1]);
-                                session.players[i].pr = parseFloat(data[2]);
-                                session.players[i].pt = parseFloat(data[3]);
-                                session.players[i].pb = parseFloat(data[4]);
-                                session.players[i].pw = parseBool(data[5]);
-                                session.players[i].ps = parseBool(data[6]);
-                                session.players[i].pa = parseBool(data[7]);
-                                session.players[i].pd = parseBool(data[8]);
-                                session.players[i].pspace = parseBool(data[9]);
-                                session.players[i].piw = parseBool(data[10]);
-                                session.players[i].pil = parseBool(data[11]);
-                                session.players[i].jmp = parseBool(data[12]);
-                                session.players[i].pxv = parseFloat(data[13]);
-                                session.players[i].pyv = parseFloat(data[14]);
-                                session.players[i].select = parseFloat(data[15]);
-                                session.players[i].clickAction = parseFloat(data[16]);
-                                session.players[i].color = parseFloat(data[17]);
-                                clients[session.players[i].id[0]].timeout = 5;
+                                var checkNums = [data[1],data[2],data[3],data[4],data[13],data[14],data[15],data[16],data[17]]
+                                if(realNums(checkNums)){
+                                    session.players[i].pl = parseFloat(data[1]);
+                                    session.players[i].pr = parseFloat(data[2]);
+                                    session.players[i].pt = parseFloat(data[3]);
+                                    session.players[i].pb = parseFloat(data[4]);
+                                    session.players[i].pw = parseBool(data[5]);
+                                    session.players[i].ps = parseBool(data[6]);
+                                    session.players[i].pa = parseBool(data[7]);
+                                    session.players[i].pd = parseBool(data[8]);
+                                    session.players[i].pspace = parseBool(data[9]);
+                                    session.players[i].piw = parseBool(data[10]);
+                                    session.players[i].pil = parseBool(data[11]);
+                                    session.players[i].jmp = parseBool(data[12]);
+                                    session.players[i].pxv = parseFloat(data[13]);
+                                    session.players[i].pyv = parseFloat(data[14]);
+                                    session.players[i].select = parseFloat(data[15]);
+                                    session.players[i].clickAction = parseFloat(data[16]);
+                                    session.players[i].color = parseFloat(data[17]);
+                                    clients[session.players[i].id[0]].timeout = 5;
+                                }
                             }
                         } 
                         // else {
@@ -367,18 +495,35 @@ ws.on("request", req => {
                 }
                 if(data[0] == "respawn"){
                     console.log("respawn");
-                    teleport(sids[j][0],worldSpawnPoint.x,worldSpawnPoint.y)
+                    teleport(sids[j][0],worldSpawnPoint.x,worldSpawnPoint.y);
                 }
-                if(data[0] == "build"){
+                if(data[0] == "build" && data.length == 5){
                     for(var i=0;i<session.players.length;i++){
                         if(data[data.length-1] == session.players[i].id[0] || data[data.length-1] == session.players[i].id[1]){
-                            if(!PIB(data[1],data[2]) || !isSolid(data[3])){
-                                //make an energy system check in here the energy system has been added in this server code just add teh check
-                                block(data[1],[data[2]],data[3]);
-                                updateBlock(data[1],data[2],data[3]);
-                                console.log("Place Block - uid:"+clients[sids[j][0]].inSid+" - x:"+data[2]+" - y:"+data[1]+" - bId:"+data[3]+" - "+getTime());
-                            } else {
-                                undoBlock(session.players[i].id[0],data[1],data[2]);
+                            if(data[1] == NaN || data[2] == NaN || data[3] == NaN){
+                                return;
+                            }
+                            var checkNums = [data[1],data[2],data[3]];
+                            if(realNums(checkNums) && inMap(data[2],data[1])){
+                                data[1] = parseInt(data[1]);
+                                data[2] = parseInt(data[2]);
+                                data[3] = parseInt(data[3]);
+                                if(!PIB(data[1],data[2]) || !isSolid(data[3])){
+                                    var prevBlock = map[data[1]][data[2]];
+                                    block(data[1],[data[2]],data[3]);
+                                    if(activeEnBlock(data[3]) != 0 && activeEnBlock(prevBlock[0]) == 1){
+                                        energyRemoveT(data[2],data[1],data[3],prevBlock[2]);
+                                    }
+                                    if(activeEnBlock(data[3]) != -1){
+                                        energyPlace(data[2],data[1],data[3]);
+                                    }
+                                    updateBlock(data[1],data[2],data[3]);
+                                    var log = "Place Block - uid:"+clients[sids[j][0]].inSid+" - x:"+data[2]+" - y:"+data[1]+" - bId:"+data[3]+" - "+getTime()
+                                    console.log(log);
+                                    logs.push(log);
+                                } else {
+                                    undoBlock(session.players[i].id[0],data[1],data[2]);
+                                }
                             }
                         }
                     }
@@ -387,30 +532,52 @@ ws.on("request", req => {
                     for(var i=0;i<session.players.length;i++){
                         if(data[data.length-1] == session.players[i].id[0] || data[data.length-1] == session.players[i].id[1]){
                             addProj(data[1],data[2],data[3],data[4],data[5],data[6],data[7],data[8],session.players[i].id[0]);
-                            console.log("Drop Item - uid:"+clients[sids[j][0]].inSid+" - id:"+data[2]+" - clickAction:"+data[3]+" - bId:"+data[4]+" - "+getTime());
+                            var log = "Drop Item - uid:"+clients[sids[j][0]].inSid+" - id:"+data[2]+" - clickAction:"+data[3]+" - bId:"+data[4]+" - "+getTime()
+                            console.log(log);
+                            logs.push(log);
                         }
                     }
                 }
-                if(data[0] == "delProj"){
+                if(data[0] == "delProj" && data.length == 3){
                     for(var i=0;i<session.players.length;i++){
                         if(data[data.length-1] == session.players[i].id[0] || data[data.length-1] == session.players[i].id[1]){
                             delProj(data[1]);
-                            console.log("Collect Item - uid:"+clients[sids[j][0]].inSid+" - "+data[1]+" - "+getTime());
+                            var log = "Collect Item - uid:"+clients[sids[j][0]].inSid+" - "+data[1]+" - "+getTime();
+                            console.log(log);
+                            logs.push(log);
                         }
                     }
                 }
+                if(data[0] == "modBlock"){
+                    // for(var i=0;i<session.players.length;i++){
+                    //     if(data[data.length-1] == session.players[i].id[0] || data[data.length-1] == session.players[i].id[1]){
+                    //         data[1] = parseInt(data[1]);
+                    //         data[2] = parseInt(data[2]);
+                    //         data[3] = parseInt(data[3]);
+                    //         var blockData = [];
+                    //         for(var i=4;i<data.length-1;i++){
+                    //             blockData.push(data[i]);
+                    //         }
+                    //         if(map[data[1]][data[2]][0] == data[3]){
+                    //             modifyBlock(data[1],data[2],data[3],blockData);
+                    //         }
+                    //     }
+                    // }
+                }
                 if(data[0] == "joinsession"){
-                    if(session.players.length < session.limit || session.limit == false){
+                    if(session.players.length < session.limit || session.limit == false && !clients[sids[j][0]].inGame){
                         clients[sids[j][0]].inGame = true;
                         session.players.push({id:sids[j],pr:0,pl:0,pt:0,pb:0,pxv:0,pyv:0,pw:false,ps:false,pa:false,pd:false,pspace:false,piw:false,pil:false,jmp:false,select:0,clickAction:0,color:0});
                         sendMap(sids[j][0]);
                         sendWorldSpawn(sids[j][0]);
-                        console.log("User Join Game - uid:"+clients[sids[j][0]].inSid+" - "+getTime());
+                        var log = "User Join Game - uid:"+clients[sids[j][0]].inSid+" - "+getTime();
+                        console.log(log);
+                        logs.push(log);
                     } else {
-                        clients[sids[i][0]].instance.send(JSON.stringify({type:"fullServer",message:"Server Full"}));
+                        clients[sids[j][0]].instance.send(JSON.stringify({type:"fullServer",message:"Server Full"}));
                     }
                 }
-                if(data[0] == "->"){
+                if(data[0] == "--"){
                     clients[sids[j][0]].timeout = 5;
                 }
             }
@@ -418,9 +585,11 @@ ws.on("request", req => {
     });
     var newSid = genSid();
     sids.push([newSid,""]);
-    clients[newSid] = {instance:instance,inSid:newSid,prevSid:"",sid:newSid,inGame:false,timeout:5};
+    clients[newSid] = {instance:instance,inSid:newSid,prevSid:"",sid:newSid,inGame:false,kick:false,timeout:5};
     sendSid(newSid);
-    console.log("User Connect - uid:"+newSid+" - "+getTime());
+    var log = "User Connect - uid:"+newSid+" - "+getTime();
+    console.log(log);
+    logs.push(log);
 });
 function sendSid(sid){
     clients[sid].instance.send(JSON.stringify({type:"sid",sid:sid}));
@@ -432,13 +601,15 @@ function sendMap(sid){
     clients[sid].instance.send(JSON.stringify({type:"map",map:map}));
 }
 function undoBlock(sid,y,x){
-    clients[sid].instance.send(JSON.stringify({type:"block",sBlock:{x:parseFloat(x),y:parseFloat(y),bId:map[y][x][0]}}));
+    if(inMap(x,y)){
+        clients[sid].instance.send(JSON.stringify({type:"block",sBlock:{x:parseFloat(x),y:parseFloat(y),bId:map[y][x][0]}}));
+    }
 }
 function undoItem(sid,pos,bId){
     clients[sid].instance.send(JSON.stringify({type:"itemRemove",bId:bId,pos:pos}));
 }
 function kickUser(sid){
-    //make this work
+    clients[sid].kick = true;
 }
 function PIB(y,x){
     for(var i=0;i<session.players.length;i++){
@@ -464,6 +635,25 @@ function validPosUpdate(sid,xPos,yPos){
     }
     return true;
 }
+function removePlayer(i){
+    var sids2 = [];
+    var players2 = [];
+    var clients2 = {};
+        if(clients[sids[i][0]].timeout > 0){
+        clients2[sids[i][0]] = clients[sids[i][0]];
+        for(var l=0;l<session.players.length;l++){
+            if(session.players[l].id[0] == sids[i][0] || session.players[l].id[1] == sids[i][0]){
+                players2.push(session.players[l]);
+            }
+        }
+        sids2.push(sids[i]);
+    } else {
+        var log = "User Kicked - uid:"+clients[sids[i][0]].inSid+" - "+getTime();
+        console.log(log);
+        logs.push(log);
+        push = true;
+    }
+}
 function sessionTimeout(){
     var sids2 = [];
     var players2 = [];
@@ -473,9 +663,9 @@ function sessionTimeout(){
         for(var i=0;i<sids.length;i++){
             clients[sids[i][0]].timeout -= 1;
             if(clients[sids[i][0]].timeout <= 3){
-                clients[sids[i][0]].instance.send(JSON.stringify({type:"->"}));
+                clients[sids[i][0]].instance.send(JSON.stringify({type:"--"}));
             }
-            if(clients[sids[i][0]].timeout > 0){
+            if(clients[sids[i][0]].timeout > 0 || clients[sids[i][0]].kick == true){
                 clients2[sids[i][0]] = clients[sids[i][0]];
                 for(var l=0;l<session.players.length;l++){
                     if(session.players[l].id[0] == sids[i][0] || session.players[l].id[1] == sids[i][0]){
@@ -484,7 +674,9 @@ function sessionTimeout(){
                 }
                 sids2.push(sids[i]);
             } else {
-                console.log("User Disconnect - uid:"+clients[sids[i][0]].inSid+" - "+getTime());
+                var log = "User Disconnect - uid:"+clients[sids[i][0]].inSid+" - "+getTime()
+                console.log(log);
+                logs.push(log);
                 push = true;
             }
         }
@@ -492,6 +684,15 @@ function sessionTimeout(){
             sids = sids2;
             session.players = players2;
             clients = clients2;
+        }
+    }
+}
+function logData(log){
+    console.log(log);
+    logs.push(log);
+    for(var i=0;i<sids.length;i++){
+        if(clients[sids].server){
+            clients[sids].instance.send(JSON.stringify({type:"log",log:log})) // send the log
         }
     }
 }
@@ -505,7 +706,6 @@ function filter(id){
     return sendData;
 }
 function teleport(sid,xPos,yPos){
-    console.log("tp")
     for(var i=0;i<session.players.length;i++){
         if(session.players[i].id[0] == sid || session.players[i].id[1] == sid){
             session.players[i].pl = xPos;
@@ -543,11 +743,11 @@ function updateGame(){
     if(session.players.length > 0){
         for(var i=0;i<session.players.length;i++){
             clients[session.players[i].id[0]].instance.send(JSON.stringify({type:"position",players:filter(session.players[i].id[0])}));
-        }
+        }  
     }
 }
 setInterval(updateGame, 1000/14);
 setInterval(sessionTimeout,1000);
 setInterval(reGenSid,15000);
 const PORT = 5001;
-httpServer.listen(PORT, "127.0.0.1", () => console.log(`Server is open on port : ${PORT}`));
+httpServer.listen(PORT, "127.0.0.1", () => console.log(`Server is open on port : ${PORT} - ${getTime()}`));
