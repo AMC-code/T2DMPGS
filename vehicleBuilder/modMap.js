@@ -23,6 +23,15 @@ var gameOffsetY = 0;
 var gameOffsetX = 0;
 var canClick = true;
 function setUp(){
+    var wMap = [];
+    for(var i=0;i<300;i++){
+        var ret = [];
+        for(var j=0;j<1000;j++){
+            ret.push(0);
+        }
+        wMap.push(ret);
+    }
+    map = wMap;
     reLoadCanv();
 }
 const eMap = [[0,1],[0,-1],[1,0],[-1,0]];
@@ -128,11 +137,11 @@ function validBlockClick(y,x){
     return !ret;
 }
 function block(y,x,num) {
-    var dBlocks = [[0,false],[1,3],[2,5],[3,8],[4,3],[5,8],[6,8],[7,3],[8,7],[9,5],[10,3],[11,8],[12,8],[13,false],[14,8],[15,4],[16,5],[17,false],[18,32],[19,6],[20,3],[21,12],[22,10],[23,10],[24,10],[25,10],[26,9],[27,9],[28,9],[29,2],[30,7,0,false],[31,7,0,false],[32,7,energyData.power],[33,7],[34,7,1],[35,7,0],[36,2],[37,12,{type:"storage",mouseX:0,mouseY:0,row:0,highlighted:0,tabs:0,inventory:[[0,0,0,0,0,0,0],[0,0,0,0,0,0,0],[0,0,0,0,0,0,0],[0,0,0,0,0,0,0]]}],[38,7,0,false],[39,5],[40,6,0,{type:"interface",mouseX:0,mouseY:0,tabs:0,select:[0,0],rows:[[[0,"TYPE:"],[1,30,""]],[[0,"TYPE:"],[1,30,""]],[[0,"TYPE:"],[1,30,""]],[[0,"TYPE:"],[1,30,""]],[[0,"TYPE:"],[1,30,""]]]}],[41,6,1,{type:"interface",mouseX:0,mouseY:0,tabs:0,select:[0,0],rows:[[[0,"TYPE:"],[1,30,""]],[[0,"TYPE:"],[1,30,""]],[[0,"TYPE:"],[1,30,""]],[[0,"TYPE:"],[1,30,""]],[[0,"TYPE:"],[1,30,""]]]}],[42,6,0,[""]],[43,6,1,[""]]];
+    var dBlocks = [[0,false,"air"],[1,3,"grain"],[2,5,"wood"],[3,8,"stone"],[4,3,"grain"],[5,8,"stone"],[6,8,"stone"],[7,3,"brittle"],[8,7,"stone"],[9,5,"wood"],[10,3,"brittle"],[11,8,"stone"],[12,8,"stone"],[13,false,"liquid"],[14,8,"stone"],[15,4,"silk"],[16,5,"cookie"],[17,false,"unknown"],[18,32,"stone"],[19,6,"metal"],[20,3,"grain"],[21,12,"stone"],[22,10,"stone"],[23,10,"stone"],[24,10,"stone"],[25,10,"stone"],[26,9,"stone"],[27,9,"stone"],[28,9,"stone"],[29,2,"grain"],[30,7,0,false,"stone"],[31,7,0,false,"stone"],[32,7,energyData.power,"stone"],[33,7,"stone"],[34,7,1,"stone"],[35,7,0,"stone"],[36,2,"silk"],[37,12,{type:"storage",purpose:"storage",mouseX:0,mouseY:0,row:0,highlighted:0,tabs:0,inventory:[[0,0,0,0,0,0,0],[0,0,0,0,0,0,0],[0,0,0,0,0,0,0],[0,0,0,0,0,0,0]]},"metal"],[38,7,0,false,"stone"],[39,5,"wood"],[40,6,0,{type:"interface",purpose:"storage",mouseX:0,mouseY:0,tabs:0,select:[0,0],rows:[[[0,"TYPE:"],[1,30,""]],[[0,"TYPE:"],[1,30,""]],[[0,"TYPE:"],[1,30,""]],[[0,"TYPE:"],[1,30,""]],[[0,"TYPE:"],[1,30,""]]]},"stone"],[41,6,1,{type:"interface",purpose:"storage",mouseX:0,mouseY:0,tabs:0,select:[0,0],rows:[[[0,"TYPE:"],[1,30,""]],[[0,"TYPE:"],[1,30,""]],[[0,"TYPE:"],[1,30,""]],[[0,"TYPE:"],[1,30,""]],[[0,"TYPE:"],[1,30,""]]]},"stone"],[42,6,0,[""],"stone"],[43,6,1,[""],"stone"],[44,6,"metal"],[45,6,"metal"],[46,6,"metal"],[47,6,"metal"]];
     if(num > dBlocks.length-1 || num < 0){
         return;
     }
-    map[y][x] = dBlocks[num];
+    map[y][x] = dBlocks[num][0];
 }
 function clickEvent(ev) {
     var rect = disp.getBoundingClientRect();
@@ -188,7 +197,7 @@ var colors = [
     [4,"#4e3307","grain"],
     [5,"#686868","stone"],
     [6,"#525252","stone"],
-    [7,"#e0ebeb","brittle"],
+    [7,"#cef5f8","brittle"],
     [8,"#e0ebeb","stone"],
     [9,"#382404","wood"],
     [10,"#929292","brittle"],
@@ -225,6 +234,10 @@ var colors = [
     [41,"#46f3f3","stone"],
     [42,"#d5dfdf","stone"],
     [43,"#46f3f3","stone"],
+    [44,"#46f3f3","stone"],
+    [45,"#46f3f3","stone"],
+    [46,"#46f3f3","stone"],
+    [47,"#e6cd43","stone"],
 ]
 var controls = {
     keys:[["ARROWRIGHT",false],["ARROWLEFT",false],["ARROWUP",false],["ARROWDOWN",false]],
@@ -305,8 +318,6 @@ function reLoadCanv(){
             var x = Math.floor(size * j - gameOffsetX*size);
             var y = Math.floor(gameOffsetY*size + disp.height - size * (map.length - i));
             if(mapActive == 0){
-                drawSquare(x,y,map[i][j][0],2);
-            } else if(mapActive == 1){
                 drawSquare(x,y,map[i][j],2);
             }
         };

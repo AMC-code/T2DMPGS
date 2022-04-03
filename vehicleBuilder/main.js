@@ -4,7 +4,7 @@ var player = false;
 var projectile = false;
 var vehicle = false;
 var logs = false;
-var activated = 0;
+var activated = 1;
 var loadData = {
     saveFile:[]
 }
@@ -81,9 +81,9 @@ function genVehicle(){
     return ret;
 }
 var vals = {
-    "0":function(){document.getElementById("dataOut").style.display = "inline-block";document.getElementById("inspect").style.backgroundColor = "#c3c3c3";blockSelect=0;render2();activated=0;},
+    // "0":function(){document.getElementById("dataOut").style.display = "inline-block";document.getElementById("inspect").style.backgroundColor = "#c3c3c3";blockSelect=0;render2();activated=0;},
     "1":function(){document.getElementById("blocks").style.display = "inline-block";document.getElementById("create").style.backgroundColor = "#c3c3c3";document.getElementById("dataOut").innerHTML="";blockSelect=0;render2();activated=1;},
-    "4":function(){document.getElementById("vehicle").style.display = "inline-block";document.getElementById("vehicle").style.backgroundColor = "#c3c3c3";document.getElementById("dataOut").innerHTML="";blockSelect=0;render2();activated=4;map=genVehicle()},
+    // "4":function(){document.getElementById("vehicle").style.display = "inline-block";document.getElementById("vehicle").style.backgroundColor = "#c3c3c3";document.getElementById("dataOut").innerHTML="";blockSelect=0;render2();activated=4;map=genVehicle()},
 }
 function change(val){
     val = ""+val;
@@ -111,12 +111,85 @@ function readSave() {
     readFile.onload = function (ev) {
         var fullData = ev.target.result.split("|||");
         if(fullData[0] == "tivect-world"){
-            loadData.saveFile = JSON.parse(fullData[1])
-            map = loadData.saveFile.gameMap;
+            // loadData.saveFile = JSON.parse(fullData[1])
+            // map = loadData.saveFile.gameMap;
         }
         if(fullData[0] == "tivect-vehicle"){
-
+            loadData.saveFile = JSON.parse(fullData[1])
+            map = loadData.saveFile.vehicle;
+            reLoadCanv()
         }
     }
     readFile.readAsText(file, "UTF-8");
+}
+function processVehicle(){
+    var l=0;
+    var r=0;
+    var t=0;
+    var b=0;
+    for(var i=0;i<map.length;i++){
+        for(var j=0;j<map[i].length;j++){
+            if(map[i][j] != 0){
+                b = i;
+                break;
+            }
+        }
+    }
+    for(var i=map.length-1;i>=0;i--){
+        for(var j=0;j<map[i].length;j++){
+            if(map[i][j] != 0){
+                t = i;
+                break;
+            }
+        }
+    }
+    for(var j=0;j<map[0].length;j++){
+        for(var i=0;i<map.length;i++){
+            if(map[i][j] != 0){
+                r = j;
+                break;
+            }
+        }
+    }
+    for(var j=map[0].length-1;j>=0;j--){
+        for(var i=0;i<map.length;i++){
+            if(map[i][j] != 0){
+                l = j;
+                break;
+            }
+        }
+    }
+    var vehicleRet = [];
+    for(var i=t;i<=b;i++){
+        var row = [];
+        for(var j=l;j<=r;j++){
+            row.push(map[i][j]);
+        }
+        vehicleRet.push(row);
+    }
+    console.log(vehicleRet);
+    console.log("Left : "+l+" Right : "+r+" Top : "+t+" Bottom : "+b);
+    return vehicleRet;
+}
+function encrypt(input) {
+    var data = JSON.stringify(input);
+    var place = 4;
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890!@#$%^&*()_+=-{}[]|\"':;?/>.<,~`";
+    var scattered = data.match(/.{1,7}/g);
+    for (var l = 0; l < scattered.length; l++) {
+        for (var i = 0; i < scattered[l].length; i++) {
+            if (chars + place > chars.length) {
+
+            }
+        }
+    }
+    return data;
+}
+function saveVehicle() {
+    var vehicle = processVehicle();
+    var downloadSave = document.getElementById("downloadSave");
+    downloadSave.href = "data:text/plain;charset=UTF-8," + encodeURIComponent("tivect-vehicle|||") + encodeURIComponent(
+        encrypt({vehicle: vehicle})
+    );
+    downloadSave.click();
 }

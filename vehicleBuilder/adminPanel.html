@@ -20,8 +20,11 @@
                 <button class="sideButton" id="projectile">Projectile</button>
                 <button class="sideButton" id="vehicle" onclick=change(4)>Vehicle</button>
                 <button class="sideButton" id="logs">Logs</button>
-                <button class="sideButton" onclick=getFile()>Upload Save File</button>
+                <button class="sideButton" onclick=getFile()>Upload File</button>
+                <button class="sideButton" onclick=saveVehicle()>Download Vehicle</button>
                 <input hidden="hidden" id="saveFile" type="file" onchange=readSave()>
+                <a hidden="hidden" id="downloadSave" download="vehicle.tivect"></a>
+
             </div>
             <div id="amc01" class="noScrollBar">
                 <canvas id="map"></canvas>

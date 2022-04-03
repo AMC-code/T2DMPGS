@@ -8,8 +8,40 @@ var session = {
 }
 var worldSpawnPoint = {x:0,y:0}
 var map = [];
-var serverKey = genServerKey();
-console.log(serverKey)
+var vehicles = [
+    {
+        mounted:false,
+        movingLeft:false,
+        movingRight:false,
+        movingUp:false,
+        movingDown:false,
+        inVehicle: -1,
+        xSpeed: 1,
+        ySpeed: 1,
+        maxXspeed:100,
+        maxYspeed:100,
+        x:0,
+        y:0,
+        velX:0,
+        velY:0,
+        map:[
+            [0,0,0,0,0,0,0,0,0,0,0,0,0,0,8,8,8,8,8,8,8,8,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+            [8,8,8,8,8,8,8,8,8,8,8,8,8,8,14,14,14,14,14,14,14,14,14,14,14,14,14,14,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,14],
+            [14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,8,8],
+            [14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,8,8],
+            [14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,8,8],
+            [14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,8,8],
+            [14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,8,8],
+            [14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,8,8],
+            [14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,8,8],
+            [14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,8,8],
+            [8,8,8,8,8,8,8,8,8,8,8,8,8,8,46,47,14,14,14,14,14,14,14,14,14,14,14,14,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8],
+            [0,0,0,0,0,0,0,0,0,0,0,0,0,0,8,8,8,8,8,8,8,8,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+        ]
+    },
+];
+// var serverKey = genServerKey();
+// console.log(serverKey)
 var logs = [];
 //
 //
@@ -493,6 +525,22 @@ ws.on("request", req => {
                         // }
                     // }
                 }
+                if(data[0] == "vehPosition"){
+                    for(var i=0;i<vehicles.length;i++){
+                        if(vehicles[i].id == data[1]){
+                            vehicles[i].x = parseFloat(data[2]);
+                            vehicles[i].y = parseFloat(data[3]);
+                            vehicles[i].xSpeed = parseFlot(data[4]);
+                            vehicles[i].xSpeed = parseFlot(data[5]);
+                            vehicles[i].movingLeft = parseBool(data[6]);
+                            vehicles[i].movingRight = parseBool(data[7]);
+                            vehicles[i].movingUp = parseBool(data[8]);
+                            vehicles[i].movingDown = parseBool(data[9]);
+                            vehicles[i].velX = parseFloat(data[10]);
+                            vehicles[i].velY = parseFloat(data[11]);
+                        }
+                    }
+                }
                 if(data[0] == "respawn"){
                     console.log("respawn");
                     teleport(sids[j][0],worldSpawnPoint.x,worldSpawnPoint.y);
@@ -600,6 +648,9 @@ function sendWorldSpawn(sid){
 function sendMap(sid){
     clients[sid].instance.send(JSON.stringify({type:"map",map:map}));
 }
+function sendVehicle(sid){
+    clients[sid].instance.send(JSON.stringify({type:"vehicleChange",vehicles:vehicles}));
+}
 function undoBlock(sid,y,x){
     if(inMap(x,y)){
         clients[sid].instance.send(JSON.stringify({type:"block",sBlock:{x:parseFloat(x),y:parseFloat(y),bId:map[y][x][0]}}));
@@ -705,6 +756,14 @@ function filter(id){
     }
     return sendData;
 }
+function vehFilter(id){
+    var sendData = [];
+    for(var i=0;i<vehicles.length;i++){
+        if(vehicles[i].id == id){
+            sendData.push({x:vehicles[i].x,y:vehicles[i].y,})
+        }
+    }
+}
 function teleport(sid,xPos,yPos){
     for(var i=0;i<session.players.length;i++){
         if(session.players[i].id[0] == sid || session.players[i].id[1] == sid){
@@ -744,6 +803,12 @@ function updateGame(){
         for(var i=0;i<session.players.length;i++){
             clients[session.players[i].id[0]].instance.send(JSON.stringify({type:"position",players:filter(session.players[i].id[0])}));
         }  
+        //
+        // add later
+        //
+        // for(var i=0;i<vehicles.length;i++){
+        //     clients[sid].instance.send(JSON.stringify({type:"vehicleData",vehicles:vehicles}));
+        // }
     }
 }
 setInterval(updateGame, 1000/14);

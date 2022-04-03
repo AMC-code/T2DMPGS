@@ -8,7 +8,7 @@ var data = {
     slots:6,
 }
 renderSize = 1
-var blockSources = ["", "grass.png", "wood.png", "stonebrick.png", "dirt.png", "stone.png", "crackedstonebrick.png", "glass.png", "concrete.png", "woodwall.png", "glasswall.png", "stonewall.png", "smoothstone.png", "water.png", "smoothstonewall.png", "redwool.png", "cookie.png", "portal.png", "obsidian.png", "goldBlock.png", "sand.png", "diamondore.png", "rubyore.png", "sapphireore.png", "emeraldore.png", "energyOre.png", "goldore.png", "silverore.png", "ironore.png","leaves.png","switchOn.png","switchOff.png","goldCore.png","coreFrame.png","energyTransfer.png","transferFrame.png","greenScreen.png","storageBlock.png","switchPower.png","log.png","scoreModB.png","scoreModA.png","scoreServerB.png","scoreServerA.png"];
+var blockSources = ["", "grass.png", "wood.png", "stonebrick.png", "dirt.png", "stone.png", "crackedstonebrick.png", "glass.png", "concrete.png", "woodwall.png", "glasswall.png", "stonewall.png", "smoothstone.png", "water.png", "smoothstonewall.png", "redwool.png", "cookie.png", "portal.png", "obsidian.png", "goldBlock.png", "sand.png", "diamondore.png", "rubyore.png", "sapphireore.png", "emeraldore.png", "energyOre.png", "goldore.png", "silverore.png", "ironore.png","leaves.png","switchOn.png","switchOff.png","goldCore.png","coreFrame.png","energyTransfer.png","transferFrame.png","greenScreen.png","storageBlock.png","switchPower.png","log.png","scoreModB.png","scoreModA.png","scoreServerB.png","scoreServerA.png","thruster.png","thrusterEnrich.png","vehController.png","vehTracker.png",];
 function setUpBlock(){
     for(var j = 0; j < blockSources.length; j++) {
         textures[j] = document.createElement("IMG");
