@@ -10,36 +10,27 @@ var worldSpawnPoint = {x:0,y:0}
 var map = [];
 var vehicles = [
     {
-        mounted:false,
+        id:null,
+        mounted:-1,
         movingLeft:false,
         movingRight:false,
         movingUp:false,
         movingDown:false,
         inVehicle: -1,
-        xSpeed: 1,
-        ySpeed: 1,
+        xSpeed: 10,
+        ySpeed: 10,
         maxXspeed:100,
         maxYspeed:100,
         x:0,
         y:0,
         velX:0,
         velY:0,
-        map:[
-            [0,0,0,0,0,0,0,0,0,0,0,0,0,0,8,8,8,8,8,8,8,8,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-            [8,8,8,8,8,8,8,8,8,8,8,8,8,8,14,14,14,14,14,14,14,14,14,14,14,14,14,14,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,14],
-            [14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,8,8],
-            [14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,8,8],
-            [14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,8,8],
-            [14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,8,8],
-            [14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,8,8],
-            [14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,8,8],
-            [14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,8,8],
-            [14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,8,8],
-            [8,8,8,8,8,8,8,8,8,8,8,8,8,8,46,47,14,14,14,14,14,14,14,14,14,14,14,14,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8],
-            [0,0,0,0,0,0,0,0,0,0,0,0,0,0,8,8,8,8,8,8,8,8,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-        ]
-    },
+        map:[[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8,8,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8,8,8,8,8,8,8,8,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,8,8,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8,14,14,14,9,13,9,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,9,13,9,14,14,14,8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,8,8,8,8,8,8,8,8,8,8,8,8,8,8,14,14,14,9,13,9,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,9,13,9,14,14,14,8,8,8,8,8,8,8,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,7,9,14,14,46,47,14,14,14,14,14,14,14,8,8,8,8,16,13,16,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,16,13,16,8,8,8,8,14,14,14,14,14,14,47,46,14,14,9,7,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,7,9,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,9,13,9,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,9,13,9,14,14,14,14,14,14,14,14,14,14,14,14,14,14,9,7,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,7,9,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,9,13,9,14,14,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,14,14,9,13,9,14,14,14,14,14,14,14,14,14,14,14,14,14,14,9,7,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,7,9,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,9,13,9,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,14,9,13,9,14,14,14,14,14,14,14,14,14,14,14,14,14,14,9,7,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,16,13,16,8,8,8,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,8,8,8,16,13,16,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8,14,14,14,14,14,14,9,13,9,14,14,8,14,14,14,14,14,14,9,14,14,14,14,14,14,14,9,14,14,14,14,14,14,14,9,14,14,14,14,14,14,14,9,14,14,14,14,14,14,14,9,14,14,14,14,14,14,8,14,14,9,13,9,14,14,14,14,14,14,8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8,14,14,14,14,14,14,9,13,9,14,14,7,14,14,14,14,14,14,9,14,14,14,14,14,14,14,9,14,14,14,14,14,14,14,9,14,14,14,14,14,14,14,9,14,14,14,14,14,14,14,9,14,14,14,14,14,14,7,14,14,9,13,9,14,14,14,14,14,14,8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8,14,14,14,14,14,14,9,13,9,14,14,7,14,14,14,14,14,14,9,14,14,14,14,14,14,14,9,14,14,14,14,14,14,14,9,14,14,14,14,14,14,14,9,14,14,14,14,14,14,14,9,14,14,14,14,14,14,7,14,14,9,13,9,14,14,14,14,14,14,8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8,14,14,14,14,14,14,9,13,9,14,14,8,14,14,14,14,14,14,9,14,14,14,14,14,14,14,9,14,14,14,14,14,14,14,9,14,14,14,14,14,14,14,9,14,14,14,14,14,14,14,9,14,14,14,14,14,14,8,14,14,9,13,9,14,14,14,14,14,14,8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,16,13,16,8,8,8,14,14,14,14,14,14,9,14,14,14,14,14,14,14,9,14,14,14,14,14,14,14,9,14,14,14,14,14,14,14,9,14,14,14,14,14,14,14,9,14,14,14,14,14,14,8,8,8,16,13,16,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8],[7,9,14,14,14,14,14,14,14,9,10,10,9,14,14,14,14,14,14,9,10,10,9,14,14,14,14,9,13,9,8,14,14,14,14,14,14,14,14,9,14,14,14,14,14,14,14,9,14,14,14,14,14,14,14,9,14,14,14,14,14,14,14,9,14,14,14,14,14,14,14,9,14,14,14,14,14,14,14,14,8,9,13,9,14,14,14,14,9,10,10,9,14,14,14,14,14,14,9,10,10,9,14,14,14,14,14,14,9,7],[7,9,14,14,14,14,14,14,14,9,10,10,9,14,14,14,14,14,14,9,10,10,9,14,14,14,14,9,13,9,8,14,14,14,14,14,14,14,14,9,14,14,14,14,14,14,14,9,14,14,14,14,14,14,14,9,14,14,14,14,14,14,14,9,14,14,14,14,14,14,14,9,14,14,14,14,14,14,14,14,8,9,13,9,14,14,14,14,9,10,10,9,14,14,14,14,14,14,9,10,10,9,14,14,14,14,14,14,9,7],[7,9,14,14,14,14,14,14,14,9,10,10,9,14,14,14,14,14,14,9,10,10,9,14,14,14,14,9,13,9,8,14,14,14,14,14,14,14,14,9,14,14,14,14,14,14,14,9,14,14,14,14,14,14,14,9,14,14,14,14,14,14,14,9,14,14,14,14,14,14,14,9,14,14,14,14,14,14,14,14,8,9,13,9,14,14,14,14,9,10,10,9,14,14,14,14,14,14,9,10,10,9,14,14,14,14,14,14,9,7],[7,9,14,14,14,14,14,14,14,9,10,10,9,14,14,14,14,14,14,9,10,10,9,14,14,14,14,9,13,9,8,14,14,14,14,14,14,14,14,8,14,14,14,14,14,14,14,8,14,14,14,14,14,14,14,8,14,14,14,14,14,14,14,8,14,14,14,14,14,14,14,8,14,14,14,14,14,14,14,14,8,9,13,9,14,14,14,14,9,10,10,9,14,14,14,14,14,14,9,10,10,9,14,14,14,14,14,14,9,7],[8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,16,13,16,8,14,14,14,14,14,14,14,14,8,14,14,14,14,14,14,14,8,14,14,14,14,14,14,14,8,14,14,14,14,14,14,14,8,14,14,14,14,14,14,14,8,14,14,14,14,14,14,14,14,8,16,13,16,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,14,14,9,13,9,8,14,14,14,14,14,14,14,14,8,14,14,14,14,14,14,14,8,14,14,14,14,14,14,14,8,14,14,14,14,14,14,14,8,14,14,14,14,14,14,14,8,14,14,14,14,14,14,14,14,8,9,13,9,14,14,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,14,14,9,13,9,8,12,12,12,12,12,12,12,12,8,14,14,14,14,14,14,14,8,14,14,14,14,14,14,14,8,14,14,14,14,14,14,14,8,14,14,14,14,14,14,14,8,12,12,12,12,12,12,12,12,8,9,13,9,14,14,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,14,14,9,13,9,8,45,45,45,45,45,45,45,45,8,14,14,14,14,14,14,14,8,14,14,14,14,14,14,14,8,14,14,14,14,14,14,14,8,14,14,14,14,14,14,14,8,45,45,45,45,45,45,45,45,8,9,13,9,14,14,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8,8,8,8,8,8,44,44,44,44,44,44,44,44,8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8,44,44,44,44,44,44,44,44,8,8,8,8,8,8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]]
+    }
 ];
+for(var i=0;i<vehicles.length;i++){
+    vehicles[i].id = genKey(8);
+}
 // var serverKey = genServerKey();
 // console.log(serverKey)
 var logs = [];
@@ -193,7 +184,13 @@ function worldGeneration(){
     }
     worldSpawnPoint.x = (xSpawnPoint*36)+1;
     worldSpawnPoint.y = (ySpawnPoint*36)+1;
-    map = wMap;
+    for(var i=0;i<vehicles.length;i++){
+        for(var i=0;i<vehicles.length;i++){
+            vehicles[i].x = worldSpawnPoint.x;
+            vehicles[i].y = worldSpawnPoint.y;
+        }
+    }
+    map = wMap
 }
 function checkOverlaps(t1, r1, b1, l1, t2, r2, b2, l2) {
     var olx = false;
@@ -359,6 +356,24 @@ function getTime(){
     }
     return date.getHours()+":"+min+":"+sec+" am";
 }
+function genKey(length){
+    const letters = "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    var credential = "";
+    for(var i=0;i<length;i++){
+        genNum = Math.floor(Math.random() * ((9 + letters.length) - 0) + 0);
+        if(genNum > 9){
+            credential += letters[genNum - 9];
+        } else {
+            credential += genNum;
+        }
+    }
+    for(var i=0;i<vehicles.length;i++){
+        if(vehicles[i].id == credential){
+            return genKey(length);
+        }
+    }
+    return credential;
+}
 function genServerKey(){
     const letters = "abcdefghijklmnopqrstuvwxyz!)&*(^@%$#ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     var credential = "";
@@ -471,6 +486,24 @@ function processData(data){
 }
 //fix this it does not work it 
 //it causes the entire server to only send stuff when it detects a change for whatever reason
+function entityInVehicle(val,xChange,yChange){
+    // for(var i=0;i<vehicles.length;i++){
+    //     if(vehicles[i].inVehicle == val){
+    //         vehicles[i].x += xChange;
+    //         vehicles[i].y += yChange;
+    //         //something funky goes on here when too fast going left or up idk
+    //         entityInVehicle(i,xChange,yChange)
+    //     }
+    // }
+    for(var i=0;i<session.players.length;i++){
+        if(session.players[i].inVehicle == val && vehicles[val].mounted != -1 && session.players[i].id[0] != vehicles[val].mounted[0]){
+            session.players[i].pl += xChange;
+            session.players[i].pr += xChange;
+            session.players[i].pt += yChange;
+            session.players[i].pb += yChange;
+        }
+    }
+}
 function realNums(nums){
     // const num = "1234567890.-";
     // for(var i=0;i<nums.length;i++){
@@ -492,7 +525,7 @@ ws.on("request", req => {
         }
         for(var j=0;j<sids.length;j++){
             if(sids[j][0] == data[data.length-1] || sids[j][1] == data[data.length-1]){
-                if(data[0] == "position" && data.length == 19){
+                if(data[0] == "position" && data.length >= 20){
                     for(var i=0;i<session.players.length;i++){
                         // if(validPosUpdate(sids[j][0],data[1],data[4])){
                             if(data[data.length-1] == session.players[i].id[0] || data[data.length-1] == session.players[i].id[1]){
@@ -514,30 +547,60 @@ ws.on("request", req => {
                                     session.players[i].pyv = parseFloat(data[14]);
                                     session.players[i].select = parseFloat(data[15]);
                                     session.players[i].clickAction = parseFloat(data[16]);
-                                    session.players[i].color = parseFloat(data[17]);
+                                    session.players[i].inVehicle = parseFloat(data[17]);
+                                    session.players[i].color = parseFloat(data[18]);
                                     clients[session.players[i].id[0]].timeout = 5;
                                 }
                             }
-                        } 
+                        }
                         // else {
                         //     console.log("too fast")
                         //     teleport(sids[i][0],session.players[i].pl,session.players[i].pb);
                         // }
                     // }
                 }
-                if(data[0] == "vehPosition"){
+                if(data[0] == "position" && data[19] == "true" && data.length == 32){
                     for(var i=0;i<vehicles.length;i++){
-                        if(vehicles[i].id == data[1]){
-                            vehicles[i].x = parseFloat(data[2]);
-                            vehicles[i].y = parseFloat(data[3]);
-                            vehicles[i].xSpeed = parseFlot(data[4]);
-                            vehicles[i].xSpeed = parseFlot(data[5]);
-                            vehicles[i].movingLeft = parseBool(data[6]);
-                            vehicles[i].movingRight = parseBool(data[7]);
-                            vehicles[i].movingUp = parseBool(data[8]);
-                            vehicles[i].movingDown = parseBool(data[9]);
-                            vehicles[i].velX = parseFloat(data[10]);
-                            vehicles[i].velY = parseFloat(data[11]);
+                        if(vehicles[i].id == data[20] && vehicles[i].mounted != -1 && (vehicles[i].mounted[0] == sids[j][0] || vehicles[i].mounted[1] == sids[j][0])){
+                            // entityInVehicle(i,parseFloat(data[21]) - vehicles[i].x, parseFloat(data[22]) - vehicles[i].y);
+                            var xChange = parseFloat(data[21]) - vehicles[i].x;
+                            var yChange = parseFloat(data[22]) - vehicles[i].y;
+                            for(var c=0;c<session.players.length;c++){
+                                if(session.players[c].inVehicle == i && session.players[c].id[0] != sids[j][0]){
+                                    session.players[c].pl += xChange;
+                                    session.players[c].pr += xChange;
+                                    session.players[c].pt += yChange;
+                                    session.players[c].pb += yChange;
+                                }
+                            }
+                            vehicles[i].x = parseFloat(data[21]);
+                            vehicles[i].y = parseFloat(data[22]);
+                            vehicles[i].xSpeed = parseFloat(data[23]);
+                            vehicles[i].ySpeed = parseFloat(data[24]);
+                            vehicles[i].movingLeft = parseBool(data[25]);
+                            vehicles[i].movingRight = parseBool(data[26]);
+                            vehicles[i].movingUp = parseBool(data[27]);
+                            vehicles[i].movingDown = parseBool(data[28]);
+                            vehicles[i].velX = parseFloat(data[29]);
+                            vehicles[i].velY = parseFloat(data[30]);
+                        }
+                    }
+                }
+                if(data[0] == "mountVehicle"){
+                    for(var i=0;i<session.players.length;i++){
+                        if(data[data.length-1] == session.players[i].id[0] || data[data.length-1] == session.players[i].id[1]){
+                            if(session.players[i].inVehicle != -1 && vehicles[data[1]].id == data[2] && (vehicles[data[1]].mounted == -1 || vehicles[data[1]].mounted[0] == session.players[i].id[0] || vehicles[data[1]].mounted[1] == session.players[i].id[0])){
+                                vehicles[data[1]].mounted = session.players[i].id;
+                                mountVehicle(sids[j][0],data[2]);
+                            }
+                        }
+                    }
+                } else if(data[0] == "unMountVehicle"){
+                    for(var i=0;i<session.players.length;i++){
+                        if(data[data.length-1] == session.players[i].id[0] || data[data.length-1] == session.players[i].id[1]){
+                            if(vehicles[data[1]].id == data[2] && vehicles[data[1]].mounted != -1 && (vehicles[data[1]].mounted[0] == session.players[i].id[0] || vehicles[data[1]].mounted[1] == session.players[i].id[0])){
+                                vehicles[data[1]].mounted = -1;
+                            }
                         }
                     }
                 }
@@ -612,11 +675,19 @@ ws.on("request", req => {
                     //     }
                     // }
                 }
+                if(data[0] == "createVehicle"){
+                    // for(var i=0;i<session.players.length;i++){
+                    //     if(data[data.length-1] == session.players[i].id[0] || data[data.length-1] == session.players[i].id[1]){
+                    //         vehicles.push(data[1])
+                    //     }
+                    // }
+                }
                 if(data[0] == "joinsession"){
                     if(session.players.length < session.limit || session.limit == false && !clients[sids[j][0]].inGame){
                         clients[sids[j][0]].inGame = true;
-                        session.players.push({id:sids[j],pr:0,pl:0,pt:0,pb:0,pxv:0,pyv:0,pw:false,ps:false,pa:false,pd:false,pspace:false,piw:false,pil:false,jmp:false,select:0,clickAction:0,color:0});
+                        session.players.push({id:sids[j],pr:0,pl:0,pt:0,pb:0,pxv:0,pyv:0,pw:false,ps:false,pa:false,pd:false,pspace:false,piw:false,pil:false,jmp:false,select:0,clickAction:0,inVehicle:-1,color:0});
                         sendMap(sids[j][0]);
+                        sendVehicles(sids[j][0]);
                         sendWorldSpawn(sids[j][0]);
                         var log = "User Join Game - uid:"+clients[sids[j][0]].inSid+" - "+getTime();
                         console.log(log);
@@ -645,11 +716,20 @@ function sendSid(sid){
 function sendWorldSpawn(sid){
     clients[sid].instance.send(JSON.stringify({type:"worldSpawn",worldSpawnPoint:worldSpawnPoint}));
 }
+function mountVehicle(sid,id){
+    clients[sid].instance.send(JSON.stringify({type:"mountVehicle",id:id}));
+}
 function sendMap(sid){
     clients[sid].instance.send(JSON.stringify({type:"map",map:map}));
 }
-function sendVehicle(sid){
-    clients[sid].instance.send(JSON.stringify({type:"vehicleChange",vehicles:vehicles}));
+
+function sendVehicles(sid){
+    var sendData = [];
+    for(var i=0;i<vehicles.length;i++){
+        var veh = vehicles[i];
+        sendData.push({x:veh.x,y:veh.y,velX:veh.velX,velY:veh.velY,xSpeed:veh.xSpeed,ySpeed:veh.ySpeed,inVehicle:veh.inVehicle,movingLeft:veh.movingLeft,movingRight:veh.movingRight,movingUp:veh.movingUp,movingDown:veh.movingDown,map:veh.map,id:veh.id,maxXspeed:veh.maxXspeed,maxYspeed:veh.maxYspeed})
+    }
+    clients[sid].instance.send(JSON.stringify({type:"vehicleChange",vehicles:sendData}));
 }
 function undoBlock(sid,y,x){
     if(inMap(x,y)){
@@ -716,7 +796,7 @@ function sessionTimeout(){
             if(clients[sids[i][0]].timeout <= 3){
                 clients[sids[i][0]].instance.send(JSON.stringify({type:"--"}));
             }
-            if(clients[sids[i][0]].timeout > 0 || clients[sids[i][0]].kick == true){
+            if(clients[sids[i][0]].timeout > 0 && !clients[sids[i][0]].kick){
                 clients2[sids[i][0]] = clients[sids[i][0]];
                 for(var l=0;l<session.players.length;l++){
                     if(session.players[l].id[0] == sids[i][0] || session.players[l].id[1] == sids[i][0]){
@@ -729,6 +809,11 @@ function sessionTimeout(){
                 console.log(log);
                 logs.push(log);
                 push = true;
+                for(var ij=0;ij<vehicles.length;ij++){
+                    if(vehicles[ij].mounted != -1 && (vehicles[ij].mounted[0] == sids[i][0] || session.players[ij].id[1] == sids[i][0])){
+                        vehicles[ij].mounted = -1;
+                    }
+                }
             }
         }
         if(push){
@@ -751,7 +836,7 @@ function filter(id){
     var sendData = [];
     for(var i=0;i<session.players.length;i++){
         if(session.players[i].id[0] != id && session.players[i].id[1] != id){
-            sendData.push({pl:session.players[i].pl,pr:session.players[i].pr,pt:session.players[i].pt,pb:session.players[i].pb,pw:session.players[i].pw,ps:session.players[i].ps,pa:session.players[i].pa,pd:session.players[i].pd,pspace:session.players[i].pspace,pxv:session.players[i].pxv,pyv:session.players[i].pyv,piw:session.players[i].piw,pil:session.players[i].pil,jmp:session.players[i].jmp,select:session.players[i].select,clickAction:session.players[i].clickAction,color:session.players[i].color});
+            sendData.push({pl:session.players[i].pl,pr:session.players[i].pr,pt:session.players[i].pt,pb:session.players[i].pb,pw:session.players[i].pw,ps:session.players[i].ps,pa:session.players[i].pa,pd:session.players[i].pd,pspace:session.players[i].pspace,pxv:session.players[i].pxv,pyv:session.players[i].pyv,piw:session.players[i].piw,pil:session.players[i].pil,jmp:session.players[i].jmp,select:session.players[i].select,clickAction:session.players[i].clickAction,inVehicle:session.players[i].inVehicle,color:session.players[i].color});
         }
     }
     return sendData;
@@ -759,10 +844,12 @@ function filter(id){
 function vehFilter(id){
     var sendData = [];
     for(var i=0;i<vehicles.length;i++){
-        if(vehicles[i].id == id){
-            sendData.push({x:vehicles[i].x,y:vehicles[i].y,})
+        var veh = vehicles[i];
+        if(veh.mounted[0] != id && veh.mounted[1] != id){
+            sendData.push({x:veh.x,y:veh.y,velX:veh.velX,velY:veh.velY,xSpeed:veh.xSpeed,ySpeed:veh.ySpeed,inVehicle:veh.inVehicle,movingLeft:veh.movingLeft,movingRight:veh.movingRight,movingUp:veh.movingUp,movingDown:veh.movingDown})
         }
     }
+    return sendData;
 }
 function teleport(sid,xPos,yPos){
     for(var i=0;i<session.players.length;i++){
@@ -801,14 +888,8 @@ function updateBlock(y,x,bId){
 function updateGame(){
     if(session.players.length > 0){
         for(var i=0;i<session.players.length;i++){
-            clients[session.players[i].id[0]].instance.send(JSON.stringify({type:"position",players:filter(session.players[i].id[0])}));
+            clients[session.players[i].id[0]].instance.send(JSON.stringify({type:"position",players:filter(session.players[i].id[0]),vehicles:vehFilter(session.players[i].id[0])}));
         }  
-        //
-        // add later
-        //
-        // for(var i=0;i<vehicles.length;i++){
-        //     clients[sid].instance.send(JSON.stringify({type:"vehicleData",vehicles:vehicles}));
-        // }
     }
 }
 setInterval(updateGame, 1000/14);
