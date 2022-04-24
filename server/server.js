@@ -560,28 +560,20 @@ ws.on("request", req => {
                 }
                 if(data[0] == "position" && data[19] == "true" && data.length == 32){
                     for(var i=0;i<vehicles.length;i++){
-                        if(vehicles[i].id == data[20] && vehicles[i].mounted != -1 && (vehicles[i].mounted[0] == sids[j][0] || vehicles[i].mounted[1] == sids[j][0])){
-                            // entityInVehicle(i,parseFloat(data[21]) - vehicles[i].x, parseFloat(data[22]) - vehicles[i].y);
-                            // var xChange = parseFloat(data[21]) - vehicles[i].x;
-                            // var yChange = parseFloat(data[22]) - vehicles[i].y;
-                            // for(var c=0;c<session.players.length;c++){
-                            //     if(session.players[c].inVehicle == i && session.players[c].id[0] != sids[j][0]){
-                            //         session.players[c].pl += xChange;
-                            //         session.players[c].pr += xChange;
-                            //         session.players[c].pt += yChange;
-                            //         session.players[c].pb += yChange;
-                            //     }
-                            // }
-                            vehicles[i].x = parseFloat(data[21]);
-                            vehicles[i].y = parseFloat(data[22]);
-                            vehicles[i].xSpeed = parseFloat(data[23]);
-                            vehicles[i].ySpeed = parseFloat(data[24]);
-                            vehicles[i].movingLeft = parseBool(data[25]);
-                            vehicles[i].movingRight = parseBool(data[26]);
-                            vehicles[i].movingUp = parseBool(data[27]);
-                            vehicles[i].movingDown = parseBool(data[28]);
-                            vehicles[i].velX = parseFloat(data[29]);
-                            vehicles[i].velY = parseFloat(data[30]);
+                        if(vehicles[i].id == data[20] && vehicles[i].mounted != -1 && (vehicles[i].mounted[0] == sids[j][0] || vehicles[i].mounted[1] == sids[j][0])){                            
+                            var checkNum = [data[21],data[22],data[23],data[24],data[29],data[30]];
+                            if(realNums(checkNum)){
+                                vehicles[i].x = parseFloat(data[21]);
+                                vehicles[i].y = parseFloat(data[22]);
+                                vehicles[i].xSpeed = parseFloat(data[23]);
+                                vehicles[i].ySpeed = parseFloat(data[24]);
+                                vehicles[i].movingLeft = parseBool(data[25]);
+                                vehicles[i].movingRight = parseBool(data[26]);
+                                vehicles[i].movingUp = parseBool(data[27]);
+                                vehicles[i].movingDown = parseBool(data[28]);
+                                vehicles[i].velX = parseFloat(data[29]);
+                                vehicles[i].velY = parseFloat(data[30]);
+                            }
                         }
                     }
                 }
