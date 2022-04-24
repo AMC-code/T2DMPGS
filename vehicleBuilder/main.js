@@ -81,9 +81,7 @@ function genVehicle(){
     return ret;
 }
 var vals = {
-    // "0":function(){document.getElementById("dataOut").style.display = "inline-block";document.getElementById("inspect").style.backgroundColor = "#c3c3c3";blockSelect=0;render2();activated=0;},
     "1":function(){document.getElementById("blocks").style.display = "inline-block";document.getElementById("create").style.backgroundColor = "#c3c3c3";document.getElementById("dataOut").innerHTML="";blockSelect=0;render2();activated=1;},
-    // "4":function(){document.getElementById("vehicle").style.display = "inline-block";document.getElementById("vehicle").style.backgroundColor = "#c3c3c3";document.getElementById("dataOut").innerHTML="";blockSelect=0;render2();activated=4;map=genVehicle()},
 }
 function change(val){
     val = ""+val;
@@ -117,7 +115,7 @@ function readSave() {
         if(fullData[0] == "tivect-vehicle"){
             loadData.saveFile = JSON.parse(fullData[1])
             map = loadData.saveFile.vehicle;
-            reLoadCanv()
+            reLoadCanv();
         }
     }
     readFile.readAsText(file, "UTF-8");

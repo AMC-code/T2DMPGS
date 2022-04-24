@@ -1,5 +1,5 @@
-const ws = new WebSocket("ws://localhost:5001");
-// const ws = new WebSocket("wss://server.tivect.com");
+// const ws = new WebSocket("ws://localhost:5001");
+const ws = new WebSocket("wss://server.tivect.com");
 var sid = "";
 var getData = setInterval(function(){
     if(sid != ""){
@@ -11,6 +11,9 @@ ws.onmessage = function (e) {
     var res = JSON.parse(e.data);
     if(res.type == "--") {
         ws.send(`--|${sid}`);
+    }
+    if(res.type == "position"){
+        playersPos = res.players;
     }
     if(res.type == "block"){
         var prevBlock = map[res.sBlock.y][res.sBlock.x];

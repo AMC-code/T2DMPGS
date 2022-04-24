@@ -8,6 +8,7 @@ var activated = 0;
 var loadData = {
     saveFile:[]
 }
+var playersPos = [];
 function changeSize(amount){
     var change = !(size+amount <=0 || size+amount > 99)
     if(change){
