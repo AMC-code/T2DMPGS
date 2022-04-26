@@ -601,8 +601,9 @@ ws.on("request", req => {
                     }
                 }
                 if(data[0] == "respawn"){
-                    console.log("respawn");
                     teleport(sids[j][0],worldSpawnPoint.x,worldSpawnPoint.y);
+                    var log = "Respawn - uid:"+clients[sids[j][0]].inSid+" - "+getTime();
+                    console.log(log);
                 }
                 if(data[0] == "build" && data.length == 5){
                     for(var i=0;i<session.players.length;i++){
@@ -678,18 +679,26 @@ ws.on("request", req => {
                     //     }
                     // }
                 }
-                if(data[0] == "joinsession"){
-                    if(session.players.length < session.limit || session.limit == false && !clients[sids[j][0]].inGame){
-                        clients[sids[j][0]].inGame = true;
+                if(data[0] == "joinrequest"){
+                    if(session.players.length < session.limit || session.limit == false && !clients[sids[j][0]].loadingGame && !clients[sids[j][0]].inGame){
+                        clients[sids[j][0]].loadingGame = true; 
                         session.players.push({id:sids[j],pr:0,pl:0,pt:0,pb:0,vehX:0,vehY:0,pxv:0,pyv:0,pw:false,ps:false,pa:false,pd:false,pspace:false,piw:false,pil:false,jmp:false,select:0,clickAction:0,inVehicle:-1,color:0});
                         sendMap(sids[j][0]);
                         sendVehicles(sids[j][0]);
                         sendWorldSpawn(sids[j][0]);
-                        var log = "User Join Game - uid:"+clients[sids[j][0]].inSid+" - "+getTime();
+                        var log = "User Join Request - uid:"+clients[sids[j][0]].inSid+" - "+getTime();
                         console.log(log);
                         logs.push(log);
                     } else {
                         clients[sids[j][0]].instance.send(JSON.stringify({type:"fullServer",message:"Server Full"}));
+                    }
+                }
+                if(data[0] == "joinsession"){
+                    if(!clients[sids[j][0]].inGame && clients[sids[j][0]].loadingGame){
+                        clients[sids[j][0]].inGame = true;
+                        var log = "User Join Game - uid:"+clients[sids[j][0]].inSid+" - "+getTime();
+                        console.log(log);
+                        logs.push(log);
                     }
                 }
                 if(data[0] == "--"){
@@ -700,7 +709,7 @@ ws.on("request", req => {
     });
     var newSid = genSid();
     sids.push([newSid,""]);
-    clients[newSid] = {instance:instance,inSid:newSid,prevSid:"",sid:newSid,inGame:false,kick:false,timeout:5};
+    clients[newSid] = {instance:instance,inSid:newSid,prevSid:newSid,sid:newSid,loadingGame:false,inGame:false,kick:false,timeout:5};
     sendSid(newSid);
     var log = "User Connect - uid:"+newSid+" - "+getTime();
     console.log(log);
