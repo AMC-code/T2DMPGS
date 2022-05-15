@@ -486,8 +486,6 @@ function processData(data){
     }
     return data1;
 }
-//fix this it does not work it 
-//it causes the entire server to only send stuff when it detects a change for whatever reason
 function entityInVehicle(val,xChange,yChange){
     // for(var i=0;i<vehicles.length;i++){
     //     if(vehicles[i].inVehicle == val){

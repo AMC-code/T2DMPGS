@@ -10,13 +10,13 @@
                     sid = res.sid;
                     console.log(res.sid);
                 }
-                if(res.type == "->") {
-                    ws.send(`->|${sid}`);
+                if(res.type == "--") {
+                    ws.send(`--|${sid}`);
                 }
             }
-            var data = "command|data1|data2|data3|<sub1|<sub2|sub4>|sub3>|sid"
+            // var data = "command|data1|data2|data3|<sub1|<sub2|sub4>|sub3>|sid"
             
-            console.log(processData(data));
+            // console.log(processData(data));
 
 
         </script>

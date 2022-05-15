@@ -1,5 +1,5 @@
-// const ws = new WebSocket("ws://localhost:5001");
-const ws = new WebSocket("wss://server.tivect.com");
+const ws = new WebSocket("ws://localhost:5001");
+// const ws = new WebSocket("wss://server.tivect.com");
 var sid = "";
 var getData = setInterval(function(){
     if(sid != ""){

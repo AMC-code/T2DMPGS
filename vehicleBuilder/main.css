@@ -64,7 +64,7 @@ body{
     margin:25px;
 }
 #blocks{
-    display:none;
+    display:inline-block;
     position:relative;
     top:0px;
     margin:25px;
@@ -74,7 +74,7 @@ body{
 }
 .dataText{
     position:relative;
-    display: inline-block;
+    display: none;
     margin-left:15px;
     margin-top:5px;
     width:100%;

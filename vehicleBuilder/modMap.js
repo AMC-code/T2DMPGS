@@ -32,6 +32,8 @@ function setUp(){
         wMap.push(ret);
     }
     map = wMap;
+    gameOffsetX = Math.round(map.length/2);
+    gameOffsetY = Math.round(map[0].length/2);
     reLoadCanv();
 }
 const eMap = [[0,1],[0,-1],[1,0],[-1,0]];
