@@ -226,6 +226,12 @@ var colors = [
     [41,"#46f3f3","stone"],
     [42,"#d5dfdf","stone"],
     [43,"#46f3f3","stone"],
+    [44,"#46f3f3","stone"],
+    [45,"#46f3f3","stone"],
+    [46,"#46f3f3","stone"],
+    [47,"#46f3f3","stone"],
+    [48,"#46f3f3","stone"],
+    [49,"#46f3f3","stone"],
 ]
 var controls = {
     keys:[["ARROWRIGHT",false],["ARROWLEFT",false],["ARROWUP",false],["ARROWDOWN",false]],

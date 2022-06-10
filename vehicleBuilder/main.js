@@ -115,6 +115,8 @@ function readSave() {
         if(fullData[0] == "tivect-vehicle"){
             loadData.saveFile = JSON.parse(fullData[1])
             map = loadData.saveFile.vehicle;
+            gameOffsetX = Math.round(map[0].length/2);
+            gameOffsetY = Math.round(map.length/2);
             reLoadCanv();
         }
     }
@@ -168,6 +170,30 @@ function processVehicle(){
     console.log(vehicleRet);
     console.log("Left : "+l+" Right : "+r+" Top : "+t+" Bottom : "+b);
     return vehicleRet;
+}
+function saveVehicleJava(){
+    var vehicle = processVehicle();
+    var ret = "{";
+    for(var i=0;i<vehicle.length;i++){
+        var add = "{"
+        for(var j=0;j<vehicle[0].length;j++){
+            if(j < vehicle[0].length-1){
+                add += `new Block(${vehicle[i][j]},0,""),`;
+            } else {
+                add += `new Block(${vehicle[i][j]},0,"")`;
+            }
+        }
+        if(i < vehicle.length-1){
+            add += "},"
+        } else {
+            add += "}"
+        }
+        ret += add;
+    }
+    ret += "}";
+    var downloadSave = document.getElementById("downloadSave");
+    downloadSave.href = "data:text/plain;charset=UTF-8," + encodeURIComponent(ret)
+    downloadSave.click();
 }
 function encrypt(input) {
     var data = JSON.stringify(input);

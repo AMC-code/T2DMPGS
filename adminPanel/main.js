@@ -116,7 +116,7 @@ function readSave() {
             map = loadData.saveFile.gameMap;
         }
         if(fullData[0] == "tivect-vehicle"){
-
+            
         }
     }
     readFile.readAsText(file, "UTF-8");
