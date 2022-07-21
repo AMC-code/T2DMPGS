@@ -723,6 +723,7 @@ function mountVehicle(sid,id){
     clients[sid].instance.send(JSON.stringify({type:"mountVehicle",id:id}));
 }
 function sendMap(sid){
+    console.log("map");
     clients[sid].instance.send(JSON.stringify({type:"map",map:map}));
 }
 
