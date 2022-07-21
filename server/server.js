@@ -40,7 +40,7 @@ var logs = [];
 function worldGeneration(){
     var wMap = [];
     // var biomes = [1,1,1,1,1,0,1,1,2,1,1];
-    var biomes = [1,0,1,0,1,0,1,0,1,0,1,0,1,0,1];
+    var biomes = [1,0,1];
     var maxBiomes = 2;
     var yWaterLevel = 35;
     var curY = 80 - yWaterLevel - 2;
