@@ -30,6 +30,7 @@ var vehicles = [
 ];
 for(var i=0;i<vehicles.length;i++){
     vehicles[i].id = genKey(8);
+    vehicles[i].vertices = vehColSides(vehicles[i].map);
 }
 // var serverKey = genServerKey();
 // console.log(serverKey)
@@ -193,6 +194,91 @@ function genSpawn(biomes){
             vehicles[i].y = worldSpawnPoint.y;
         }
     }
+}
+function vehColSides(veh){
+    var values = [];
+    for(var i=0;i<4;i++){
+      values.push([]);
+    }
+    for(var j=veh[0].length-1;j>=0;j--){
+      var y = veh.length-1;
+      var curLen = 0;
+      for(var i=0;i<veh.length;i++){
+        if(veh[i][j] != 0 && (j+1 > veh[i].length-1 || veh[i][j+1] == 0)){
+          curLen += 1;
+        } else if(curLen > 0){
+          values[1].push([y+curLen,j,y]);
+          curLen = 0;
+        }
+        y--;
+      }
+      if(curLen > 0){
+        values[1].push([y+curLen,j,y]);
+        curLen = 0;
+      }
+    }
+    for(var j=veh[0].length-1;j>=0;j--){
+      var y = veh.length-1;
+      var curLen = 0;
+      for(var i=0;i<veh.length;i++){
+        if(veh[i][j] != 0 && (j-1 < 0 || veh[i][j-1] == 0)){
+          curLen += 1;
+        } else if(curLen > 0){
+          values[3].push([y+curLen,j,y]);
+          curLen = 0;
+        }
+        y--;
+      }
+      if(curLen > 0){
+        values[3].push([y+curLen,j,y]);
+        curLen = 0;
+      }
+    }
+    for(var i=0;i<veh.length;i++){
+      var curLen = 0;
+      for(var j=0;j<veh[i].length;j++){
+        if(veh[i][j] != 0 && (i-1 < 0 || veh[i-1][j] == 0)){
+          curLen += 1;
+        } else if(curLen > 0){
+          values[0].push([veh.length-i-1,j-curLen,j]);
+          curLen = 0;
+        }
+      }
+      if(curLen > 0){ 
+        values[0].push([veh.length-i-1,veh[i].length-curLen,veh[i].length]);
+        curLen = 0;
+      }
+    }
+    for(var i=veh.length-1;i>=0;i--){
+      var curLen = 0;
+      for(var j=0;j<veh[i].length;j++){
+        if(veh[i][j] != 0 && (i+1 > veh.length-1 || veh[i+1][j] == 0)){
+          curLen += 1;
+        } else if(curLen > 0){
+          values[2].push([veh.length-i-1,j-curLen,j]);
+          curLen = 0;
+        }
+      }
+      if(curLen > 0){
+        values[2].push([veh.length-i-1,veh[i].length-curLen,veh[i].length]);
+        curLen = 0;
+      }
+    }
+    console.log("\nNEW VEHICLE VERTICES\n0 1 2 3\nt r b l\n");
+    for(var j=0;j<values.length;j++){
+      console.log("Direction - "+j);
+      for(var i=0;i<values[j].length;i++){
+          console.log("y - "+values[j][i][0]+" | ");
+          console.log("x - "+values[j][i][1]+" | ");
+          if(j == 1 || j == 3){
+            console.log("x - "+values[j][i][2]+" | ");
+          } else {
+            console.log("y - "+values[j][i][2]+" | ");
+          }
+          console.log();
+      }
+    }
+    return values;
 }
 function checkOverlaps(t1, r1, b1, l1, t2, r2, b2, l2) {
     var olx = false;
