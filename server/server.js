@@ -817,7 +817,7 @@ function sendVehicles(sid){
     var sendData = [];
     for(var i=0;i<vehicles.length;i++){
         var veh = vehicles[i];
-        sendData.push({x:veh.x,y:veh.y,velX:veh.velX,velY:veh.velY,xSpeed:veh.xSpeed,ySpeed:veh.ySpeed,inVehicle:veh.inVehicle,movingLeft:veh.movingLeft,movingRight:veh.movingRight,movingUp:veh.movingUp,movingDown:veh.movingDown,map:veh.map,id:veh.id,maxXspeed:veh.maxXspeed,maxYspeed:veh.maxYspeed})
+        sendData.push({x:veh.x,y:veh.y,velX:veh.velX,velY:veh.velY,xSpeed:veh.xSpeed,ySpeed:veh.ySpeed,inVehicle:veh.inVehicle,movingLeft:veh.movingLeft,movingRight:veh.movingRight,movingUp:veh.movingUp,movingDown:veh.movingDown,vertices:veh.vertices,map:veh.map,id:veh.id,maxXspeed:veh.maxXspeed,maxYspeed:veh.maxYspeed})
     }
     clients[sid].instance.send(JSON.stringify({type:"vehicleChange",vehicles:sendData}));
 }
