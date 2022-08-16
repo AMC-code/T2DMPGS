@@ -685,6 +685,12 @@ ws.on("request", req => {
                     }
                 }
                 if(data[0] == "respawn"){
+                    for(var i=0;i<vehicles.length;i++){
+                        // if(vehicles[i].mounted != -1 && (vehicles[i].mounted[0] == session.players[i].id[0] || vehicles[i].mounted[1] == session.players[i].id[0]))
+                        if(vehicles[i].mounted[0] == sids[j][0] || vehicles[i].mounted[1] == sids[j][0]){
+                            vehicles[i].mounted = -1;
+                        }
+                    }
                     teleport(sids[j][0],worldSpawnPoint.x,worldSpawnPoint.y);
                     var log = "Respawn - uid:"+clients[sids[j][0]].inSid+" - "+getTime();
                     console.log(log);
