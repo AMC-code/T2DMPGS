@@ -266,17 +266,20 @@ function vehColSides(veh){
     }
     console.log("\nNEW VEHICLE VERTICES\n0 1 2 3\nt r b l\n");
     for(var j=0;j<values.length;j++){
-      console.log("Direction - "+j);
-      for(var i=0;i<values[j].length;i++){
-          console.log("y - "+values[j][i][0]+" | ");
-          console.log("x - "+values[j][i][1]+" | ");
-          if(j == 1 || j == 3){
-            console.log("x - "+values[j][i][2]+" | ");
-          } else {
-            console.log("y - "+values[j][i][2]+" | ");
-          }
-          console.log();
-      }
+        console.log("Direction - "+j);
+        for(var i=0;i<values[j].length;i++){
+            var log = "";
+            log+="y - "+values[j][i][0]+" | ";
+            log+="x - "+values[j][i][1]+" | "
+            if(j == 1 || j == 3){
+                log+="x - "+values[j][i][2]+" | "
+            } else {
+                log+="y - "+values[j][i][2]+" | "
+            }
+            console.log(log);
+        }
+        console.log();
+
     }
     return values;
 }
