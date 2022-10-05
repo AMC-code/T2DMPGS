@@ -837,7 +837,7 @@ function mountVehicle(sid,id){
 }
 function sendMap(sid){
     clients[sid].instance.send(JSON.stringify({type:"map",map:map}));
-    console.log(`Sent Map - sid:${clients[sids[i][0]].inSid}`);
+    // console.log(`Sent Map - sid:${clients[sids[i][0]].inSid}`);
 
 }
 
