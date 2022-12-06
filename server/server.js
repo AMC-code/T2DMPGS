@@ -554,7 +554,7 @@ function inMap(x,y){
 }
 var types = []
 function processData(data){
-    data = data.split("|")
+    data = data.split("|");
     var idx = 0;
     var data1 = [];
     var active = false;
@@ -565,13 +565,13 @@ function processData(data){
                 idx++;
             }
             data1[idx] = [];
-            data1[idx].push(data[i].split("<")[1].split(">")[0])
+            data1[idx].push(data[i].split("<")[1].split(">")[0]);
             idx++;
         } else if(data[i][data[i].length-1] == ">"){
             if(!active){
-                data1[idx] = data[i].split(">")[0]
+                data1[idx] = data[i].split(">")[0];
             } else {
-                data1[idx].push(data[i].split(">")[0])
+                data1[idx].push(data[i].split(">")[0]);
                 active = false;
             }
             idx++;
@@ -580,14 +580,14 @@ function processData(data){
                 idx++;
             }
             data1[idx] = [];
-            data1[idx].push(data[i].split("<")[1])
+            data1[idx].push(data[i].split("<")[1]);
             active = true;
         } else {
             if(!active){
-                data1[idx] = data[i]
+                data1[idx] = data[i];
                 idx++;
             } else {
-                data1[idx].push(data[i])
+                data1[idx].push(data[i]);
             }
         }
     }
@@ -790,6 +790,13 @@ ws.on("request", req => {
                     //     }
                     // }
                 }
+                if(data[0] == "createVehicle"){
+                    // for(var i=0;i<session.players.length;i++){
+                    //     if(data[data.length-1] == session.players[i].id[0] || data[data.length-1] == session.players[i].id[1]){
+                    //         vehicles.push(data[1])
+                    //     }
+                    // }
+                }
                 if(data[0] == "joinrequest"){
                     if(session.players.length < session.limit || session.limit == false && !clients[sids[j][0]].loadingGame && !clients[sids[j][0]].inGame){
                         clients[sids[j][0]].loadingGame = true; 
@@ -834,11 +841,10 @@ function sendWorldSpawn(sid){
 }
 function mountVehicle(sid,id){
     clients[sid].instance.send(JSON.stringify({type:"mountVehicle",id:id}));
-}
+} 
 function sendMap(sid){
     clients[sid].instance.send(JSON.stringify({type:"map",map:map}));
-    // console.log(`Sent Map - sid:${clients[sids[i][0]].inSid}`);
-
+    console.log(`Sent Map - sid:${clients[sid].inSid}`);
 }
 
 function sendVehicles(sid){
