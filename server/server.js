@@ -1016,7 +1016,7 @@ function updateGame(){
         }  
     }
 }
-setInterval(updateGame, 1000/5);
+setInterval(updateGame, 1000/15);
 setInterval(sessionTimeout,1000);
 setInterval(reGenSid,15000);
 const PORT = 5001;
