@@ -668,7 +668,7 @@ ws.on("request", req => {
                     for(var i=0;i<vehicles.length;i++){
                         if(vehicles[i].id == data[20] && vehicles[i].mounted != -1 && (vehicles[i].mounted[0] == sids[j][0] || vehicles[i].mounted[1] == sids[j][0])){                            
                             var checkNum = [data[21],data[22],data[23],data[24],data[29],data[30]];
-                            if(realNums(checkNum)){
+                            if(realNums(checkNum,sids[i][0])){
                                 vehicles[i].x = parseFloat(data[21]);
                                 vehicles[i].y = parseFloat(data[22]);
                                 vehicles[i].xSpeed = parseFloat(data[23]);
@@ -723,7 +723,7 @@ ws.on("request", req => {
                                 return;
                             }
                             var checkNums = [data[1],data[2],data[3]];
-                            if(realNums(checkNums) && inMap(data[2],data[1])){
+                            if(realNums(checkNums,sids[i][0]) && inMap(data[2],data[1])){
                                 data[1] = parseInt(data[1]);
                                 data[2] = parseInt(data[2]);
                                 data[3] = parseInt(data[3]);
